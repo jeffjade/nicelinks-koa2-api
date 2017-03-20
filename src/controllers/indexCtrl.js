@@ -1,5 +1,5 @@
 export default async (ctx, next) => {
-  const title = 'koa2 title'
+  const title = 'Nice Koa2 Blog-Api'
 
   await ctx.render('index', {
     title
