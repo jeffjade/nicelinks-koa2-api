@@ -10,22 +10,18 @@ const getNiceBlog = async (ctx, next) => {
 
 const addNewBlog = async (ctx, next) => {
   let params = $util.query(ctx.request.url)
-  let options = {}
-  Field.blog.forEach(item => {
-    if (params[item]) {
-      options[item] = params[item]
-    }
-  })
+  // let options = ctx.request.body
 
+  console.log(options)
   try {
     return await Models.Blog.create(options).then((result) => {
-      console.log(result)
       ctx.status = 200
       ctx.body = `Nice, Okay`
     })
   } catch (error) {
     console.log('Something has gone wrong, Error messages are as follows: '.red)
     console.log(error)
+    ctx.status = 500
     ctx.body = 'Something Error :' + error
   }
 }
