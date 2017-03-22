@@ -5,8 +5,8 @@ import mongoose from 'mongoose'
 */
 mongoose.Promise = global.Promise
 
-// 定义 BlogSchema 数据表和数据结构
-const BlogSchema = new mongoose.Schema({
+// 定义 LinksSchema 数据表和数据结构
+const LinksSchema = new mongoose.Schema({
   url_path: {
     type: String,
     required: true
@@ -21,7 +21,11 @@ const BlogSchema = new mongoose.Schema({
   },
   tags: {
     type: String,
-    default: ''
+    required: true
+  },
+  classify: {
+    type: String,
+    required: true
   },
   like: {
     number: Number,
@@ -41,7 +45,7 @@ const BlogSchema = new mongoose.Schema({
   }
 })
 
-// let BlogModel = mongoose.model('Blog', BlogSchema)
+// let BlogModel = mongoose.model('Blog', LinksSchema)
 
 // let option = {
 //   url_path: 'http://jeffjade.com',
@@ -78,5 +82,5 @@ BlogModel.create(option, function (error, doc) {
 // })
 
 // 使用 url_path 字段作为索引
-// BlogSchema.index({ url_path: 1 })
-export default mongoose.model('Blog', BlogSchema)
+// LinksSchema.index({ url_path: 1 })
+export default mongoose.model('Links', LinksSchema)

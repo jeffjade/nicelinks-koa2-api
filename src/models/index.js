@@ -16,7 +16,7 @@ export function connectDatabase (uri) {
   })
 }
 
-connectDatabase('mongodb://127.0.0.1:27017/nice_blog')
+connectDatabase('mongodb://127.0.0.1:27017/nice_links')
 
-import Blog from './blogModel'
-export default { Blog }
+import Links from './linksModel'
+export default { Links }

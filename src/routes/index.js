@@ -1,6 +1,6 @@
 import Router from 'koa-router'
 import indexCtrl from '../controllers/indexCtrl'
-import blogCtrl from '../controllers/blogCtrl'
+import linksCtrl from '../controllers/linksCtrl'
 
 const router = Router({
   prefix: '/api'
@@ -8,8 +8,8 @@ const router = Router({
 
 router.get('/', indexCtrl)
 
-router.get('/getNiceBlog', blogCtrl.getNiceBlog)
+router.get('/getNiceLinks', linksCtrl.getNiceLinks)
 
-router.post('/addNewBlog', blogCtrl.addNewBlog)
+router.post('/addNiceLinks', linksCtrl.addNiceLinks)
 
 export default router
