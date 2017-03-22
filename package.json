@@ -11,7 +11,7 @@
     "clean": "rm -rf app/",
     "test": "mocha -u bdd --compilers js:babel-core/register",
     "dev": "npm start",
-    "deploy": "git add . && git commit -a && git pill && git push"
+    "deploy": "git add . && git commit -a && git pull && git push"
   },
   "engines": {
     "node": ">= 4"
