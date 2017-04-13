@@ -12,4 +12,6 @@ router.get('/getNiceLinks', linksCtrl.getNiceLinks)
 
 router.post('/addNiceLinks', linksCtrl.addNiceLinks)
 
+router.post('/dispatchAction', linksCtrl.dispatchAction)
+
 export default router

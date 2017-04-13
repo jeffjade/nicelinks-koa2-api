@@ -28,8 +28,20 @@ const LinksSchema = new mongoose.Schema({
     required: true
   },
   like: {
-    number: Number,
+    type: Number,
     default: 0
+  },
+  like_ip_arr: {
+    type: Object,
+    default: {}
+  },
+  dislike: {
+    type: Number,
+    default: 0
+  },
+  dislike_ip_arr: {
+    type: Object,
+    default: {}
   },
   social: {
     type: Object,
