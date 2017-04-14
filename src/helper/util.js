@@ -21,12 +21,24 @@ export default {
   },
 
   // 获取当前地址，指定参数的值;
-  getUrlParam (name) {
+  getUrlParam (url, name) {
     var reg = new RegExp('(^|&)' + name + '=([^&]*)(&|$)')
-    var r = window.location.search.substr(1).match(reg)
+    var r = url.search.substr(1).match(reg)
     if (r != null) {
       return unescape(r[2])
     }
     return null
+  },
+
+  getQueryObject(queryStr) {
+    var str = queryStr === undefined ? location.search : queryStr;
+    var obj = {};
+    var reg = /([^?&=]+)=([^?&=]*)/g;
+    str.replace(reg, function(match, $1, $2) {
+        var name = decodeURIComponent($1);
+        var val = decodeURIComponent($2);
+        obj[name] = val;
+    });
+    return obj;
   }
 }

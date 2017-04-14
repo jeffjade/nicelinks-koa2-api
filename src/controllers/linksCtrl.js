@@ -3,7 +3,8 @@ import $util from './../helper/util'
 import Field from './../config/field'
 
 const getNiceLinks = async (ctx, next) => {
-  return await Models.Links.find().exec().then(result => {
+  let options = $util.getQueryObject(ctx.request.url)
+  return await Models.Links.find(options).exec().then(result => {
     ctx.body = result
   })
 }
