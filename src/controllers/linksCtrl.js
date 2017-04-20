@@ -4,7 +4,16 @@ import Field from './../config/field'
 
 const getNiceLinks = async (ctx, next) => {
   let options = $util.getQueryObject(ctx.request.url)
-  return await Models.Links.find(options).exec().then(result => {
+  let params = {
+    classify: options.classify
+  }
+  let sortParam = {}
+  options.sortTarget ? sortParam[options.sortTarget] = options.sortType : ''
+
+  console.log(sortParam)
+  let limitNumber = parseInt(options.pageSize)
+  let skipNumber = (parseInt(options.pageCount) - 1) * limitNumber
+  return await Models.Links.find(params).sort(sortParam).limit(limitNumber).skip(skipNumber).exec().then(result => {
     ctx.body = result
   })
 }
@@ -26,22 +35,27 @@ const addNiceLinks = async (ctx, next) => {
 
 const dispatchAction = async (ctx, next) => {
   let options = ctx.request.body
-  console.log(options)
   try {
     return await Models.Links.findOne({'_id': options._id}).then((result) => {
-      console.log(result)
-      let likeIpArr = result.like_ip_arr
-      likeIpArr[options.fingerprint] = !likeIpArr[options.fingerprint]
+      let actionTarget = options.action
+      let actionArrTarget = actionTarget + '_arr'
 
-      let likeNum = 0
-      for (let index in likeIpArr) {
-        likeNum = likeIpArr[index] ? likeNum + 1 : likeNum
+      let actionArr = result[actionArrTarget]
+      actionArr[options.fingerprint] = !actionArr[options.fingerprint]
+      
+      let count = 0
+      for (let index in actionArr) {
+        count = actionArr[index] ? count + 1 : count
       }
 
-      return Models.Links.update({'_id': options._id}, {$set: {'like_ip_arr': likeIpArr, 'like': likeNum}}).then(result => {
+      let setting = {}
+      setting[actionTarget] = count
+      setting[actionArrTarget] = actionArr
+
+      return Models.Links.update({'_id': options._id}, {$set: setting}).then(result => {
         ctx.status = 200
         ctx.body = {
-          likeNum: likeNum
+          count: count
         }
       })
     })

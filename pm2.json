@@ -1,6 +1,6 @@
 {
   "apps": [{
-    "name": "koa2-startkit",
+    "name": "nicelinks-koa2-api",
     "script": "bin/production.js",
     // "cwd": "/absolute/path/to/project",
     "exec_mode": "cluster",

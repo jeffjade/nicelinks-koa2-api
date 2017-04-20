@@ -31,7 +31,7 @@ const LinksSchema = new mongoose.Schema({
     type: Number,
     default: 0
   },
-  like_ip_arr: {
+  like_arr: {
     type: Object,
     default: {}
   },
@@ -39,7 +39,7 @@ const LinksSchema = new mongoose.Schema({
     type: Number,
     default: 0
   },
-  dislike_ip_arr: {
+  dislike_arr: {
     type: Object,
     default: {}
   },
