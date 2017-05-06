@@ -1,6 +1,5 @@
 import Models from './../models/index'
 import $util from './../helper/util'
-import Field from './../config/field'
 
 const getNiceLinks = async (ctx, next) => {
   let options = $util.getQueryObject(ctx.request.url)

@@ -1,5 +1,5 @@
 export default {
-  port: 3000,
+  port: 4000,
   db: {
     host: 'localhost',
     database: 'nice_links',
