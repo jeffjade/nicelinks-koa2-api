@@ -41,7 +41,7 @@ const dispatchAction = async (ctx, next) => {
 
       let actionArr = result[actionArrTarget]
       actionArr[options.fingerprint] = !actionArr[options.fingerprint]
-      
+
       let count = 0
       for (let index in actionArr) {
         count = actionArr[index] ? count + 1 : count
