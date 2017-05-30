@@ -2,19 +2,27 @@ import Models from './../models/index'
 import $util from './../helper/util'
 
 const getNiceLinks = async (ctx, next) => {
+  console.log(ctx.request)
+
   let options = $util.getQueryObject(ctx.request.url)
-  let params = {
-    classify: options.classify
-  }
+  let params = {}
   let sortParam = {}
+  
+  options.classify ? params.classify = options.classify : ''
   options.sortTarget ? sortParam[options.sortTarget] = options.sortType : ''
 
-  console.log(sortParam)
   let limitNumber = parseInt(options.pageSize)
   let skipNumber = (parseInt(options.pageCount) - 1) * limitNumber
-  return await Models.Links.find(params).sort(sortParam).limit(limitNumber).skip(skipNumber).exec().then(result => {
-    ctx.body = result
-  })
+  try {
+    return await Models.Links.find(params).sort(sortParam).limit(limitNumber).skip(skipNumber).exec().then(result => {
+      console.log(result)
+      ctx.body = result
+    })
+  } catch (error) {
+    console.log(error)
+    ctx.status = 500
+    ctx.body = 'Opps, Something Error :' + error
+  }
 }
 
 const addNiceLinks = async (ctx, next) => {

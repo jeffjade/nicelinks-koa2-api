@@ -14,11 +14,19 @@ import config from './config'
 const app = new Koa()
 const bodyparser = Bodyparser()
 
+import session from "koa-session2"
+import passport from "./config/passport"
+
 // middlewares
 app.use(convert(bodyparser))
 app.use(convert(json()))
 app.use(convert(logger()))
 app.use(KoaHelmet())
+
+app.proxy = true    
+app.use(session({key: "SESSIONID"}))
+app.use(passport.initialize())
+app.use(passport.session())
 
 // static
 app.use(convert(koaStatic(path.join(__dirname, '../public'), {

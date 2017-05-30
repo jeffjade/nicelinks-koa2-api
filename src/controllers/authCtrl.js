@@ -13,23 +13,40 @@ function generateToken (user) {
 function setUserInfo (request) {
   return {
     _id: request._id,
-    firstName: request.profile.firstName,
-    lastName: request.profile.lastName,
+    username: request.username,
     email: request.email,
     role: request.role
+  }
+}
+
+function sendResponse (ctx, status, body) {
+  ctx.status = status
+  ctx.body = body
+}
+
+const checkUser = async (params) => {
+  try {
+    const user = await UserModel.findOne(params).exec()
+    if (user) {
+      return { code: 201, msg: 'email exist' }
+    } else {
+      return { code: 0, msg: 'new user' }
+    }
+  } catch (error) {
+    throw error
   }
 }
 
 // ========================================
 // Login Route
 // ========================================
-exports.login = function (req, res, next) {
-  let userInfo = setUserInfo(req.user)
+exports.login = async (ctx, next) => {
+  let userInfo = setUserInfo(ctx.request.body)
 
-  res.status(200).json({
+  return {
     token: 'JWT ' + generateToken(userInfo),
     user: userInfo
-  })
+  }
 }
 
 // ========================================
@@ -37,61 +54,82 @@ exports.login = function (req, res, next) {
 // ========================================
 exports.register = async (ctx, next) => {
   // Check for registration errors
-  console.log(ctx)
   const requestBody = ctx.request.body
   const response = ctx.response
 
   const email = requestBody.email
-  const firstName = requestBody.firstName
-  const lastName = requestBody.lastName
   const password = requestBody.password
 
   // Return error if no email provided
   if (!email) {
-    return response.status(422).send({ error: 'You must enter an email address.'})
-  }
-
-  // Return error if full name not provided
-  if (!firstName || !lastName) {
-    return response.status(422).send({ error: 'You must enter your full name.'})
+    return sendResponse(ctx, 420, 'You must enter an email address.')
   }
 
   // Return error if no password provided
   if (!password) {
-    return response.status(422).send({ error: 'You must enter a password.' })
+    return sendResponse(ctx, 421, 'You must enter a password.')
   }
 
-  UserModel.findOne({ email: email }, function (err, existingUser) {
-    if (err) { return next(err) }
+  const checkUserResult = await checkUser({ email: email })
 
-      // If user is not unique, return error
-    if (existingUser) {
-      return response.status(422).send({ error: 'That email address is already in use.' })
-    }
-
-      // If email is unique and password was provided, create account
-    let user = new UserModel({
+  if (checkUserResult.code) {
+    ctx.status = 422
+    ctx.body = checkUserResult.msg
+  } else {
+    let newUser = new UserModel({
       email: email,
       password: password,
-      profile: { firstName: firstName, lastName: lastName }
+      profile: {}
     })
 
-    user.save(function (err, user) {
-      if (err) { return next(err) }
-
-        // Subscribe member to Mailchimp list
-        // mailchimp.subscribeToNewsletter(user.email);
-
-        // Respond with JWT if user was created
-
+    try {
+      const user = await newUser.save()
       let userInfo = setUserInfo(user)
-
-      response.status(201).json({
+      ctx.status = 200
+      ctx.body = {
+        message: 'Congratulations on your successful registration',
         token: 'JWT ' + generateToken(userInfo),
         user: userInfo
-      })
-    })
-  })
+      }
+    } catch (err) {
+      throw err
+    }
+  }
+
+  // UserModel.findOne({ email: email }, async (err, existingUser) => {
+  //   console.log(err, existingUser, '111')
+  //   if (err) { return next(err) }
+
+  //     // If user is not unique, return error
+  //   if (existingUser) {
+  //     ctx.status = 422
+  //     ctx.body = "That email address is already in use."
+  //   }
+
+  //     // If email is unique and password was provided, create account
+  //   let user = new UserModel({
+  //     email: email,
+  //     password: password,
+  //     profile: {}
+  //   })
+
+  //   user.save(async (err, user) => {
+  //     if (err) { return next(err) }
+
+  //       // Subscribe member to Mailchimp list
+  //       // mailchimp.subscribeToNewsletter(user.email);
+
+  //       // Respond with JWT if user was created
+
+  //     let userInfo = await setUserInfo(user)
+
+  //     ctx.status = 200
+  //     ctx.body = {
+  //       token: 'JWT ' + generateToken(userInfo),
+  //       user: userInfo
+  //     }
+  //   })
+  // })
 }
 
 // ========================================
