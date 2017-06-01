@@ -9,13 +9,13 @@ import logger from 'koa-logger'
 import koaStatic from 'koa-static-plus'
 import koaOnError from 'koa-onerror'
 import KoaHelmet from 'koa-helmet'
+import session from 'koa-session2'
+import KoaStatic from 'koa-static'
+import KoaMount from 'koa-mount'
 import config from './config'
 
 const app = new Koa()
 const bodyparser = Bodyparser()
-
-import session from "koa-session2"
-import passport from "./config/passport"
 
 // middlewares
 app.use(convert(bodyparser))
@@ -23,15 +23,18 @@ app.use(convert(json()))
 app.use(convert(logger()))
 app.use(KoaHelmet())
 
-app.proxy = true    
-app.use(session({key: "SESSIONID"}))
-app.use(passport.initialize())
-app.use(passport.session())
+app.proxy = true
+app.use(session({key: 'SESSIONID'}))
+app.use(config.passport.initialize())
+app.use(config.passport.session())
 
 // static
 app.use(convert(koaStatic(path.join(__dirname, '../public'), {
   pathPrefix: ''
 })))
+
+// upload avatar
+app.use(KoaMount('/upload/avatar', KoaStatic(config.default.avatarUploadDir)))
 
 // views
 app.use(views(path.join(__dirname, '../views'), {

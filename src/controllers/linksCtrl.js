@@ -7,7 +7,7 @@ const getNiceLinks = async (ctx, next) => {
   let options = $util.getQueryObject(ctx.request.url)
   let params = {}
   let sortParam = {}
-  
+
   options.classify ? params.classify = options.classify : ''
   options.sortTarget ? sortParam[options.sortTarget] = options.sortType : ''
 

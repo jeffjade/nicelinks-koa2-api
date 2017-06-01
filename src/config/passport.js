@@ -1,5 +1,5 @@
 // Importing Passport, strategies, and config
-const passport = require('koa-passport'),  
+const passport = require('koa-passport'),
   User = require('../models/userModel'),
   config = require('./main'),
   JwtStrategy = require('passport-jwt').Strategy,
@@ -9,23 +9,23 @@ const passport = require('koa-passport'),
 const localOptions = { usernameField: 'email' }
 
 // Setting up local login strategy
-const localLogin = new LocalStrategy(localOptions, function(email, password, done) {  
+const localLogin = new LocalStrategy(localOptions, function (email, password, done) {
   console.log(email, password)
   console.log('email, password')
-  User.findOne({ email: email }, function(err, user) {
-    if(err) { return done(err); }
-    if(!user) { return done(null, false, { error: 'Your login details could not be verified. Please try again.' }); }
+  User.findOne({ email: email }, function (err, user) {
+    if (err) { return done(err) }
+    if (!user) { return done(null, false, { error: 'Your login details could not be verified. Please try again.' }) }
 
-    user.comparePassword(password, function(err, isMatch) {
-      if (err) { return done(err); }
-      if (!isMatch) { return done(null, false, { error: "Your login details could not be verified. Please try again." }); }
+    user.comparePassword(password, function (err, isMatch) {
+      if (err) { return done(err) }
+      if (!isMatch) { return done(null, false, { error: 'Your login details could not be verified. Please try again.' }) }
 
-      return done(null, user);
-    });
-  });
+      return done(null, user)
+    })
+  })
 })
 
-const jwtOptions = {  
+const jwtOptions = {
   // Telling Passport to check authorization headers for JWT
   jwtFromRequest: ExtractJwt.fromAuthHeader(),
   // Telling Passport where to find the secret
@@ -33,14 +33,14 @@ const jwtOptions = {
 }
 
 // Setting up JWT login strategy
-const jwtLogin = new JwtStrategy(jwtOptions, function(payload, done) {  
-  User.findById(payload._id, function(err, user) {
-    if (err) { return done(err, false); }
+const jwtLogin = new JwtStrategy(jwtOptions, function (payload, done) {
+  User.findById(payload._id, function (err, user) {
+    if (err) { return done(err, false) }
 
     if (user) {
-      done(null, user);
+      done(null, user)
     } else {
-      done(null, false);
+      done(null, false)
     }
   })
 })
@@ -55,7 +55,7 @@ passport.deserializeUser(function (user, done) {
   return done(null, user)
 })
 
-passport.use(jwtLogin) 
+passport.use(jwtLogin)
 passport.use(localLogin)
 
 module.exports = passport
