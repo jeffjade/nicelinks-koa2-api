@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken'),
   crypto = require('crypto'),
   UserModel = require('../models/userModel'),
-  config = require('../config/main')
+  config = require('../config/main'),
   passport = require('../config/passport')
 
 // Middleware to require login/auth
