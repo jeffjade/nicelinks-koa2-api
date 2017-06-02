@@ -1,11 +1,13 @@
-import mongoose from 'mongoose'
+let mongoose = require('mongoose')
+let config = require('./../config')
+let Links =  require('./linksModel')
 
 /* Solve Problem: (node) DeprecationWarning:
   Mongoose: mpromise (mongoose's default promise library) is deprecated
 */
 mongoose.Promise = global.Promise
 
-export function connectDatabase (uri) {
+function connectDatabase (uri) {
   return new Promise((resolve, reject) => {
     mongoose.connection
       .on('error', error => reject(error))
@@ -16,7 +18,6 @@ export function connectDatabase (uri) {
   })
 }
 
-connectDatabase('mongodb://127.0.0.1:27017/nice_links')
+connectDatabase(config.main.database)
 
-import Links from './linksModel'
-export default { Links }
+module.exports = { Links }

@@ -1,4 +1,3 @@
-// Importing Passport, strategies, and config
 const passport = require('koa-passport'),
   User = require('../models/userModel'),
   config = require('./main'),

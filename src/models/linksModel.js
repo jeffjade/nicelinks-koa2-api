@@ -1,4 +1,4 @@
-import mongoose from 'mongoose'
+let mongoose = require('mongoose')
 
 /* Solve Problem: (node) DeprecationWarning:
   Mongoose: mpromise (mongoose's default promise library) is deprecated
@@ -95,4 +95,4 @@ BlogModel.create(option, function (error, doc) {
 
 // 使用 url_path 字段作为索引
 // LinksSchema.index({ url_path: 1 })
-export default mongoose.model('Links', LinksSchema)
+module.exports = mongoose.model('Links', LinksSchema)

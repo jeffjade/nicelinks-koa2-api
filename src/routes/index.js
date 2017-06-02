@@ -1,43 +1,9 @@
-import Router from 'koa-router'
-// import passport from 'koa-passport'
+let Router = require('koa-router')
 
-import indexCtrl from '../controllers/indexCtrl'
-import linksCtrl from '../controllers/linksCtrl'
+let indexCtrl = require('../controllers/indexCtrl')
+let linksCtrl = require('../controllers/linksCtrl')
 
-import AuthController from '../controllers/authCtrl'
-import passport from '../config/passport'
-
-// Middleware to require login/auth
-const requireAuth = passport.authenticate('jwt', { session: false })
-
-const requireLogin = (ctx, next) => {
-  return passport.authenticate('local', (err, user, info, status) => {
-    if (user) {
-      ctx.cookies.set('NiceLinksLoginCookie', true, {
-        maxAge: 15 * 60 * 1000,
-        httpOnly: false
-      })
-      ctx.status = 200
-      ctx.body = {
-        role: user.role,
-        _id: user._id
-      }
-      return ctx.login(user)
-    } else {
-      ctx.status = 422
-      ctx.body = info
-    }
-  })(ctx, next)
-}
-
-const requireLogout = (ctx, next) => {
-  ctx.cookies.set('NiceLinksLoginCookie', false)
-  ctx.logout()
-  ctx.status = 200
-  ctx.body = {
-    message: 'logout successfully'
-  }
-}
+let AuthController = require('../controllers/authCtrl')
 
 const router = Router({
   prefix: '/api'
@@ -58,12 +24,15 @@ const authRoutes = Router()
 authRoutes.post('/signup', AuthController.register)
 
 // Login router
-authRoutes.post('/login', requireLogin)
+authRoutes.post('/login', AuthController.login)
 
-// login logout
-authRoutes.post('/logout', requireLogout)
+// logout router
+authRoutes.post('/logout', AuthController.logout)
+
+// logoff router
+authRoutes.post('/logoff', AuthController.logoff)
 
 router.use('/auth', authRoutes.routes())
 // *********************Login Auth Register********************** Strat//
 
-export default router
+module.exports = router

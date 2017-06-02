@@ -1,4 +1,4 @@
-export default {
+module.exports = {
   query (search) {
     let str = search || window.location.search
     let objURL = {}

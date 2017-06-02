@@ -2,6 +2,10 @@ const jwt = require('jsonwebtoken'),
   crypto = require('crypto'),
   UserModel = require('../models/userModel'),
   config = require('../config/main')
+  passport = require('../config/passport')
+
+// Middleware to require login/auth
+const requireAuth = passport.authenticate('jwt', { session: false })
 
 function generateToken (user) {
   return jwt.sign(user, config.secret, {
@@ -37,6 +41,18 @@ const checkUser = async (params) => {
   }
 }
 
+const logoffUserById = (id) => {
+  return new Promise(( resolve, reject) => {
+    User.findOneAndRemove({ _id: id }, err => {
+      if(err){
+        reject(err);
+      }
+      console.log('logoff success')
+      resolve();
+    })
+  })
+}
+
 // ========================================
 // Login Route
 // ========================================
@@ -46,6 +62,46 @@ exports.login = async (ctx, next) => {
   return {
     token: 'JWT ' + generateToken(userInfo),
     user: userInfo
+  }
+}
+
+exports.login = (ctx, next) => {
+  return passport.authenticate('local', (err, user, info, status) => {
+    if (user) {
+      ctx.cookies.set('NiceLinksLoginCookie', true, {
+        maxAge: 15 * 60 * 1000,
+        httpOnly: false
+      })
+      ctx.status = 200
+      ctx.body = {
+        role: user.role,
+        _id: user._id
+      }
+      return ctx.login(user)
+    } else {
+      ctx.status = 422
+      ctx.body = info.error
+    }
+  })(ctx, next)
+}
+
+exports.logout = (ctx, next) => {
+  ctx.cookies.set('NiceLinksLoginCookie', false)
+  ctx.logout()
+  ctx.status = 200
+  ctx.body = {
+    success: true,
+    message: 'logout successfully'
+  }
+}
+
+exports.logoff = async( ctx ) => {
+  let id = ctx.request.body.id
+  await logoffUserById(id)
+  ctx.status = 200
+  ctx.body = {
+      success: true,
+      message: 'Logoff Success'
   }
 }
 
@@ -95,41 +151,6 @@ exports.register = async (ctx, next) => {
       throw err
     }
   }
-
-  // UserModel.findOne({ email: email }, async (err, existingUser) => {
-  //   console.log(err, existingUser, '111')
-  //   if (err) { return next(err) }
-
-  //     // If user is not unique, return error
-  //   if (existingUser) {
-  //     ctx.status = 422
-  //     ctx.body = "That email address is already in use."
-  //   }
-
-  //     // If email is unique and password was provided, create account
-  //   let user = new UserModel({
-  //     email: email,
-  //     password: password,
-  //     profile: {}
-  //   })
-
-  //   user.save(async (err, user) => {
-  //     if (err) { return next(err) }
-
-  //       // Subscribe member to Mailchimp list
-  //       // mailchimp.subscribeToNewsletter(user.email);
-
-  //       // Respond with JWT if user was created
-
-  //     let userInfo = await setUserInfo(user)
-
-  //     ctx.status = 200
-  //     ctx.body = {
-  //       token: 'JWT ' + generateToken(userInfo),
-  //       user: userInfo
-  //     }
-  //   })
-  // })
 }
 
 // ========================================

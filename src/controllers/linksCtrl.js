@@ -1,5 +1,5 @@
-import Models from './../models/index'
-import $util from './../helper/util'
+let Models = require('./../models/index')
+let $util = require('./../helper/util')
 
 const getNiceLinks = async (ctx, next) => {
   console.log(ctx.request)
@@ -74,7 +74,7 @@ const dispatchAction = async (ctx, next) => {
   }
 }
 
-export default {
+module.exports =  {
   getNiceLinks,
   addNiceLinks,
   dispatchAction
