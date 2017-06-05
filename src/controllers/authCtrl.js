@@ -1,8 +1,9 @@
 const jwt = require('jsonwebtoken'),
   crypto = require('crypto'),
   UserModel = require('../models/userModel'),
-  config = require('../config/main')
-  passport = require('../config/passport')
+  config = require('../config/main'),
+  passport = require('../config/passport'),
+  sendMail = require('../helper/nodemailer');
 
 // Middleware to require login/auth
 const requireAuth = passport.authenticate('jwt', { session: false })
@@ -100,8 +101,8 @@ exports.logoff = async( ctx ) => {
   await logoffUserById(id)
   ctx.status = 200
   ctx.body = {
-      success: true,
-      message: 'Logoff Success'
+    success: true,
+    message: 'Logoff Success'
   }
 }
 
@@ -132,25 +133,68 @@ exports.register = async (ctx, next) => {
     ctx.status = 422
     ctx.body = checkUserResult.msg
   } else {
-    let newUser = new UserModel({
-      email: email,
-      password: password,
-      profile: {}
-    })
+    crypto.randomBytes(20, async (err, buf) => {
+      let user = new UserModel({
+        email: email,
+        password: password,
+        profile: {}
+      })
 
-    try {
-      const user = await newUser.save()
-      let userInfo = setUserInfo(user)
-      ctx.status = 200
-      ctx.body = {
-        message: 'Congratulations on your successful registration',
-        token: 'JWT ' + generateToken(userInfo),
-        user: userInfo
+      // 保证激活码不会重复
+      user.activeToken = user._id + buf.toString('hex')
+      user.activeExpires = Date.now() + 24 * 3600 * 1000
+      let link = 'http://locolhost:4000/account/active/' + user.activeToken
+      
+      // 发送激活邮件
+      sendMail({
+        to: email,
+        html: `请点击 <a href="${link}">此处</a> 激活。`
+      })
+
+      try {
+        const user = await user.save()
+        // let userInfo = setUserInfo(user)
+        ctx.status = 200
+        ctx.body = {
+          message: `已发送邮件至 ${user.email} 请在24小时内按照邮件提示激活。`,
+          // token: 'JWT ' + generateToken(userInfo),
+          // user: userInfo
+        }
+      } catch (err) {
+        throw err
       }
-    } catch (err) {
-      throw err
-    }
+    })
   }
+}
+
+exports.active = async (ctx, next) => {
+  const requestBody = ctx.request.body
+  // 找到激活码对应的用户
+  let user = User.findOne({
+    activeToken: requestBody.activeToken,
+    // 过期时间 > 当前时间
+    activeExpires: {$gt: Date.now()}
+  }).exec()
+
+  // 激活码无效
+  if (!user) {
+    return res.render('message', {
+    title: '激活失败',
+    content: '您的激活链接无效，请重新 <a href="/account/signup">注册</a>'
+    })
+  }
+
+  // 激活并保存
+  user.active = true
+  user.save(function (err, user) {
+  if (err) return next(err)
+
+  // 返回成功
+  res.render('message', {
+    title: '激活成功',
+    content: user.username + '已成功激活，请前往 <a href="/login">登录</a>'
+    })
+  })
 }
 
 // ========================================

@@ -30,7 +30,13 @@ const UserSchema = new Schema({
   },
   resetPasswordExpires: {
     type: Date
-  }
+  },
+  active: {
+      type: Boolean,
+      default: false
+  },
+  activeToken: String,
+  activeExpires: Date,
 },
   {
     timestamps: true

@@ -32,6 +32,8 @@ authRoutes.post('/logout', AuthController.logout)
 // logoff router
 authRoutes.post('/logoff', AuthController.logoff)
 
+router.get('/active/:activeToken', AuthController.active)
+
 router.use('/auth', authRoutes.routes())
 // *********************Login Auth Register********************** Strat//
 
