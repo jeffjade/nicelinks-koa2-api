@@ -1,9 +1,9 @@
 let nodemailer  = require("nodemailer"),
-  user = 'yunjeff@163.com',
-  pass = 'your_email_passwd'
+  user = 'nicelinks@163.com',
+  pass = 'nicelinks1706'
 
 let smtpTransport = nodemailer.createTransport( {
-  service: "163",
+  service: "smtp.163.com",
   auth: {
     user: user,
     pass: pass
@@ -12,9 +12,9 @@ let smtpTransport = nodemailer.createTransport( {
 
 let sendMail = (params = {}) => {
   smtpTransport.sendMail({
-    from    : params.from || `Elliott<${user}>`,
+    from    : params.from || `Nicer<${user}>`,
     to      : params.to || '<1259134802@qq.com>',
-    subject : '欢迎注册 Nice Links',
+    subject : 'Welcome to join Nice Links ！',
     html    : params.html || 'www.jeffjade.com'
   }, function(err, res) {
       if (err) {

@@ -69,6 +69,12 @@ exports.login = async (ctx, next) => {
 exports.login = (ctx, next) => {
   return passport.authenticate('local', (err, user, info, status) => {
     if (user) {
+      if (!user.active) {
+        ctx.status = 423
+        ctx.body = '此账号尚未激活'
+        return
+      }
+
       ctx.cookies.set('NiceLinksLoginCookie', true, {
         maxAge: 15 * 60 * 1000,
         httpOnly: false
@@ -133,37 +139,42 @@ exports.register = async (ctx, next) => {
     ctx.status = 422
     ctx.body = checkUserResult.msg
   } else {
-    crypto.randomBytes(20, async (err, buf) => {
-      let user = new UserModel({
-        email: email,
-        password: password,
-        profile: {}
-      })
+    let buf = crypto.randomBytes(20)
+    console.log('buf')
+    console.log(buf)
 
-      // 保证激活码不会重复
-      user.activeToken = user._id + buf.toString('hex')
-      user.activeExpires = Date.now() + 24 * 3600 * 1000
-      let link = 'http://locolhost:4000/account/active/' + user.activeToken
-      
-      // 发送激活邮件
-      sendMail({
-        to: email,
-        html: `请点击 <a href="${link}">此处</a> 激活。`
-      })
-
-      try {
-        const user = await user.save()
-        // let userInfo = setUserInfo(user)
-        ctx.status = 200
-        ctx.body = {
-          message: `已发送邮件至 ${user.email} 请在24小时内按照邮件提示激活。`,
-          // token: 'JWT ' + generateToken(userInfo),
-          // user: userInfo
-        }
-      } catch (err) {
-        throw err
-      }
+    let user = new UserModel({
+      email: email,
+      password: password,
+      profile: {}
     })
+
+    // 保证激活码不会重复
+    user.activeToken = user._id + buf.toString('hex')
+    user.activeExpires = Date.now() + 24 * 3600 * 1000
+    let link = 'http://locolhost:4000/account/active/' + user.activeToken
+    
+    // 发送激活邮件
+    sendMail({
+      to: email,
+      html: `欢迎加入 Nice Links，为保证可以正常使用，请在 24 小时内，击下面链接完成邮件验证：${link}`
+    })
+
+    try {
+      await new Promise((resolve, reject) => {
+        user.save((err) => {
+          if (err) { reject(err) }
+          resolve()
+        })
+      })
+      ctx.status = 200
+      ctx.body = {
+        success: true,
+        message: `已发送邮件至 ${user.email} 请在24小时内按照邮件提示激活。`
+      }
+    } catch (err) {
+      throw err
+    }
   }
 }
 
