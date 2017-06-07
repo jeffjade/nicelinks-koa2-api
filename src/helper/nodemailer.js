@@ -1,9 +1,12 @@
 let nodemailer  = require("nodemailer"),
-  user = 'nicelinks@163.com',
-  pass = 'nicelinks1706'
+  user = require("./../config/secret").user,
+  pass = require("./../config/secret").pass
 
-let smtpTransport = nodemailer.createTransport( {
-  service: "smtp.163.com",
+console.log(require("./../config/secret"))
+
+let smtpTransport = nodemailer.createTransport({
+  host: "smtp.163.com",
+  secure: true,
   auth: {
     user: user,
     pass: pass
