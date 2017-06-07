@@ -43,3 +43,5 @@ app
 
 !src/config/index.js
 !src/config/default.js.idea
+
+src/config/secret.js
