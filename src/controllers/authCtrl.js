@@ -140,9 +140,6 @@ exports.register = async (ctx, next) => {
     ctx.body = checkUserResult.msg
   } else {
     let buf = crypto.randomBytes(20)
-    console.log('buf')
-    console.log(buf)
-
     let user = new UserModel({
       email: email,
       password: password,
@@ -157,7 +154,8 @@ exports.register = async (ctx, next) => {
     // 发送激活邮件
     sendMail({
       to: email,
-      html: `欢迎加入 Nice Links，为保证可以正常使用，请在 24 小时内，击下面链接完成邮件验证：${link}`
+      type: 'active',
+      link: link
     })
 
     try {
