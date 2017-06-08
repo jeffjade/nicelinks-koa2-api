@@ -149,7 +149,7 @@ exports.register = async (ctx, next) => {
     // 保证激活码不会重复
     user.activeToken = user._id + buf.toString('hex')
     user.activeExpires = Date.now() + 24 * 3600 * 1000
-    let link = 'http://locolhost:4000/account/active/' + user.activeToken
+    let link = 'http://locolhost:4000/account?activeToken=' + user.activeToken
     
     // 发送激活邮件
     sendMail({
@@ -179,31 +179,38 @@ exports.register = async (ctx, next) => {
 exports.active = async (ctx, next) => {
   const requestBody = ctx.request.body
   // 找到激活码对应的用户
-  let user = User.findOne({
+  let user = await UserModel.findOne({
     activeToken: requestBody.activeToken,
     // 过期时间 > 当前时间
     activeExpires: {$gt: Date.now()}
   }).exec()
 
+  console.log(user)
   // 激活码无效
   if (!user) {
-    return res.render('message', {
-    title: '激活失败',
-    content: '您的激活链接无效，请重新 <a href="/account/signup">注册</a>'
-    })
+    ctx.status = 425
+    ctx.body = "验证失败，验证链接无效或已经过期，请重新 <a href='/login'>注册</a>。"
+    return
   }
 
   // 激活并保存
-  user.active = true
-  user.save(function (err, user) {
-  if (err) return next(err)
-
-  // 返回成功
-  res.render('message', {
-    title: '激活成功',
-    content: user.username + '已成功激活，请前往 <a href="/login">登录</a>'
+  try {
+    user.active = true
+    await new Promise((resolve, reject) => {
+      user.save((err) => {
+        if (err) { reject(err) }
+        resolve()
+      })
     })
-  })
+
+    ctx.status = 200
+    ctx.body = {
+      success: true,
+      message: `Successfully Activated`
+    }
+  } catch (err) {
+    throw err
+  }
 }
 
 // ========================================
