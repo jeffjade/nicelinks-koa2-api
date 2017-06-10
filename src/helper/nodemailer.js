@@ -15,7 +15,7 @@ let smtpTransport = nodemailer.createTransport({
 
 let typeList = {
   active: {
-    title: 'Welcome to join Nice Links ！',
+    title: 'Welcome to join Us！',
     desc: 'Welcome to join Nice Links, in order to ensure the normal use, please within 24 hours, click the following link to complete the mail verification.',
     button: 'Activate Account'
   },

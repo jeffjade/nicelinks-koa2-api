@@ -149,7 +149,7 @@ exports.register = async (ctx, next) => {
     // 保证激活码不会重复
     user.activeToken = user._id + buf.toString('hex')
     user.activeExpires = Date.now() + 24 * 3600 * 1000
-    let link = 'http://locolhost:4000/account?activeToken=' + user.activeToken
+    let link = 'http://locolhost:8888/account?activeToken=' + user.activeToken
     
     // 发送激活邮件
     sendMail({
@@ -185,7 +185,6 @@ exports.active = async (ctx, next) => {
     activeExpires: {$gt: Date.now()}
   }).exec()
 
-  console.log(user)
   // 激活码无效
   if (!user) {
     ctx.status = 425
@@ -207,6 +206,49 @@ exports.active = async (ctx, next) => {
     ctx.body = {
       success: true,
       message: `Successfully Activated`
+    }
+  } catch (err) {
+    throw err
+  }
+}
+
+exports.requestResetPwd = async (ctx, next) => {
+  const requestBody = ctx.request.body
+  let user = await UserModel.findOne({
+    email: requestBody.email
+  }).exec()
+
+  if (!user) {
+    ctx.status = 426
+    ctx.body = {
+      success: false,
+      message: "未找到此邮箱对应账户，请检查"
+    }
+    return
+  }
+
+  user.resetPasswordToken = generateToken(user)
+  user.resetPasswordExpires = Date.now() + 24 * 3600 * 1000
+  let link = 'http://locolhost:8888/reset-pwd?resetPasswordToken=' + user.resetPasswordToken
+  
+  // 发送激活邮件
+  sendMail({
+    to: user.email,
+    type: 'reset',
+    link: link
+  })
+
+  try {
+    await new Promise((resolve, reject) => {
+      user.save((err) => {
+        if (err) { reject(err) }
+        resolve()
+      })
+    })
+    ctx.status = 200
+    ctx.body = {
+      success: true,
+      message: `已发送邮件至 ${user.email} 请在 24 小时内按照邮件提示，进行重设密码。`
     }
   } catch (err) {
     throw err

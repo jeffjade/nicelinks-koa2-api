@@ -34,6 +34,8 @@ authRoutes.post('/logoff', AuthController.logoff)
 
 authRoutes.post('/active', AuthController.active)
 
+authRoutes.post('/requestResetPwd', AuthController.requestResetPwd)
+
 router.use('/auth', authRoutes.routes())
 // *********************Login Auth Register********************** Strat//
 
