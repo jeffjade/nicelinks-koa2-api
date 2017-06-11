@@ -149,14 +149,10 @@ exports.register = async (ctx, next) => {
     // 保证激活码不会重复
     user.activeToken = user._id + buf.toString('hex')
     user.activeExpires = Date.now() + 24 * 3600 * 1000
-    let link = 'http://locolhost:8888/account?activeToken=' + user.activeToken
+    let link = `${config.clientPath}/account?activeToken=` + user.activeToken
     
     // 发送激活邮件
-    sendMail({
-      to: email,
-      type: 'active',
-      link: link
-    })
+    sendMail({ to: user.email, type: 'active', link: link })
 
     try {
       await new Promise((resolve, reject) => {
@@ -222,21 +218,16 @@ exports.requestResetPwd = async (ctx, next) => {
     ctx.status = 426
     ctx.body = {
       success: false,
-      message: "未找到此邮箱对应账户，请检查"
+      message: "The corresponding account for this mailbox has not been found. Please check it."
     }
     return
   }
 
   user.resetPasswordToken = generateToken(user)
   user.resetPasswordExpires = Date.now() + 24 * 3600 * 1000
-  let link = 'http://locolhost:8888/reset-pwd?resetPasswordToken=' + user.resetPasswordToken
+  let link = `${config.clientPath}/reset-pwd?resetPasswordToken=` + user.resetPasswordToken
   
-  // 发送激活邮件
-  sendMail({
-    to: user.email,
-    type: 'reset',
-    link: link
-  })
+  sendMail({ to: user.email, type: 'reset', link: link })
 
   try {
     await new Promise((resolve, reject) => {
