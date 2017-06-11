@@ -14,16 +14,6 @@ function generateToken (user) {
   })
 }
 
-// Set user info from request
-function setUserInfo (request) {
-  return {
-    _id: request._id,
-    username: request.username,
-    email: request.email,
-    role: request.role
-  }
-}
-
 function sendResponse (ctx, status, body) {
   ctx.status = status
   ctx.body = body
@@ -57,15 +47,6 @@ const logoffUserById = (id) => {
 // ========================================
 // Login Route
 // ========================================
-exports.login = async (ctx, next) => {
-  let userInfo = setUserInfo(ctx.request.body)
-
-  return {
-    token: 'JWT ' + generateToken(userInfo),
-    user: userInfo
-  }
-}
-
 exports.login = (ctx, next) => {
   return passport.authenticate('local', (err, user, info, status) => {
     if (user) {
@@ -76,7 +57,7 @@ exports.login = (ctx, next) => {
       }
 
       ctx.cookies.set('NiceLinksLoginCookie', true, {
-        maxAge: 15 * 60 * 1000,
+        maxAge: 30 * 60 * 1000,
         httpOnly: false
       })
       ctx.status = 200
@@ -98,7 +79,8 @@ exports.logout = (ctx, next) => {
   ctx.status = 200
   ctx.body = {
     success: true,
-    message: 'logout successfully'
+    message: 'logout successfully',
+    token: 'JWT ' + generateToken(userInfo)
   }
 }
 
@@ -172,6 +154,9 @@ exports.register = async (ctx, next) => {
   }
 }
 
+// ========================================
+// Active Account
+// ========================================
 exports.active = async (ctx, next) => {
   const requestBody = ctx.request.body
   // 找到激活码对应的用户
@@ -244,6 +229,13 @@ exports.requestResetPwd = async (ctx, next) => {
   } catch (err) {
     throw err
   }
+}
+
+
+exports.setProfile = async (ctx, next) => {
+}
+
+exports.getProfile = async (ctx, next) => {
 }
 
 // ========================================
