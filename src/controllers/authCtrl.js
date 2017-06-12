@@ -236,7 +236,7 @@ exports.requestResetPwd = async (ctx, next) => {
 
 exports.setProfile = async (ctx, next) => {
   const requestBody = ctx.request.body
-  let user = await findUser({email: requestBody.email})
+  let user = await findUser({_id: requestBody._id})
   if (!user) {
     ctx.status = 427
     ctx.body = {
@@ -265,6 +265,26 @@ exports.setProfile = async (ctx, next) => {
 }
 
 exports.getProfile = async (ctx, next) => {
+  const requestBody = ctx.request.body
+  let user = await findUser({_id: requestBody._id})
+  if (!user) {
+    ctx.status = 427
+    ctx.body = {
+      success: false,
+      message: `没找见对用的账户。`
+    }
+  } else {
+    ctx.status = 200
+    ctx.body = {
+      success: true,
+      value: {
+        profile: user.profile,
+        email: user.email,
+        role: user.role,
+        id: user._id
+      }
+    }
+  }
 }
 
 // ========================================
