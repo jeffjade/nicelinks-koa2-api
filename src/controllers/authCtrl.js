@@ -19,26 +19,34 @@ function sendResponse (ctx, status, body) {
   ctx.body = body
 }
 
-const checkUser = async (params) => {
-  try {
-    const user = await UserModel.findOne(params).exec()
-    if (user) {
-      return { code: 201, msg: 'email exist' }
-    } else {
-      return { code: 0, msg: 'new user' }
-    }
-  } catch (error) {
-    throw error
-  }
+const findUser = (params) => {
+  return new Promise((resolve, reject) => {
+    UserModel.findOne(params, (err, doc) => {
+      if(err){
+        reject(err)
+      }
+      resolve(doc)
+    })
+  })
+}
+
+const findAllUsers = () => {
+  return new Promise((resolve, reject) => {
+    UserModel.find({}, (err, doc) => {
+      if(err){
+        reject(err)
+      }
+      resolve(doc)
+    })
+  })
 }
 
 const logoffUserById = (id) => {
   return new Promise(( resolve, reject) => {
-    User.findOneAndRemove({ _id: id }, err => {
+    UserModel.findOneAndRemove({ _id: id }, err => {
       if(err){
         reject(err);
       }
-      console.log('logoff success')
       resolve();
     })
   })
@@ -79,8 +87,7 @@ exports.logout = (ctx, next) => {
   ctx.status = 200
   ctx.body = {
     success: true,
-    message: 'logout successfully',
-    token: 'JWT ' + generateToken(userInfo)
+    message: 'logout successfully'
   }
 }
 
@@ -98,10 +105,7 @@ exports.logoff = async( ctx ) => {
 // Registration Route
 // ========================================
 exports.register = async (ctx, next) => {
-  // Check for registration errors
   const requestBody = ctx.request.body
-  const response = ctx.response
-
   const email = requestBody.email
   const password = requestBody.password
 
@@ -115,11 +119,10 @@ exports.register = async (ctx, next) => {
     return sendResponse(ctx, 421, 'You must enter a password.')
   }
 
-  const checkUserResult = await checkUser({ email: email })
+  const doc = await findUser({ email: email })
 
-  if (checkUserResult.code) {
-    ctx.status = 422
-    ctx.body = checkUserResult.msg
+  if (doc) {
+    return sendResponse(ctx, 422, 'The mailbox you filled in has been registered.')
   } else {
     let buf = crypto.randomBytes(20)
     let user = new UserModel({
@@ -231,8 +234,34 @@ exports.requestResetPwd = async (ctx, next) => {
   }
 }
 
-
 exports.setProfile = async (ctx, next) => {
+  const requestBody = ctx.request.body
+  let user = await findUser({email: requestBody.email})
+  if (!user) {
+    ctx.status = 427
+    ctx.body = {
+      success: false,
+      message: `没找见对用的账户。`
+    }
+  } else {
+    let profileList = requestBody.profile
+    for (let key in profileList) {
+      user.profile[key] = profileList[key] ? profileList[key] : user.profile[key]
+    }
+
+    await new Promise((resolve, reject) => {
+      user.save((err) => {
+        if (err) { reject(err) }
+        resolve()
+      })
+    })
+
+    ctx.status = 200
+    ctx.body = {
+      success: true,
+      message: `Set Successfully`
+    }
+  }
 }
 
 exports.getProfile = async (ctx, next) => {
