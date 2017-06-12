@@ -38,7 +38,7 @@ authRoutes.post('/requestResetPwd', AuthController.requestResetPwd)
 
 authRoutes.post('/setProfile', AuthController.setProfile)
 
-authRoutes.post('/getProfile', AuthController.getProfile)
+authRoutes.get('/getProfile', AuthController.getProfile)
 
 router.use('/auth', authRoutes.routes())
 // *********************Login Auth Register********************** Strat//

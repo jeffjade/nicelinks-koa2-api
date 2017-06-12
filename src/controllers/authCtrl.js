@@ -3,7 +3,8 @@ const jwt = require('jsonwebtoken'),
   UserModel = require('../models/userModel'),
   config = require('../config/main'),
   passport = require('../config/passport'),
-  sendMail = require('../helper/nodemailer');
+  sendMail = require('../helper/nodemailer'),
+  $util = require('./../helper/util')
 
 // Middleware to require login/auth
 const requireAuth = passport.authenticate('jwt', { session: false })
@@ -265,7 +266,7 @@ exports.setProfile = async (ctx, next) => {
 }
 
 exports.getProfile = async (ctx, next) => {
-  const requestBody = ctx.request.body
+  const requestBody = ctx.request.query
   let user = await findUser({_id: requestBody._id})
   if (!user) {
     ctx.status = 427
@@ -281,7 +282,7 @@ exports.getProfile = async (ctx, next) => {
         profile: user.profile,
         email: user.email,
         role: user.role,
-        id: user._id
+        _id: user._id
       }
     }
   }

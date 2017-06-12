@@ -2,8 +2,6 @@ let Models = require('./../models/index')
 let $util = require('./../helper/util')
 
 const getNiceLinks = async (ctx, next) => {
-  console.log(ctx.request)
-
   let options = $util.getQueryObject(ctx.request.url)
   let params = {}
   let sortParam = {}
