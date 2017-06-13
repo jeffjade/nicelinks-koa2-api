@@ -17,8 +17,10 @@ const UserSchema = new Schema({
     required: true
   },
   profile: {
-    firstName: { type: String },
-    lastName: { type: String }
+    username: { type: String, default: '' },
+    nickname: { type: String, default: '' },
+    website: { type: String, default: '' },
+    description: { type: String, default: '' }
   },
   role: {
     type: String,

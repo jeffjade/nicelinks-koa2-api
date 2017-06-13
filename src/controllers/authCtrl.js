@@ -247,7 +247,13 @@ exports.setProfile = async (ctx, next) => {
   } else {
     let profileList = requestBody.profile
     for (let key in profileList) {
-      user.profile[key] = profileList[key] ? profileList[key] : user.profile[key]
+      // user.profile[key] = profileList[key] ? profileList[key] : user.profile[key]
+      if (key === 'username') {
+        user.profile[key] = user.profile[key] ? user.profile[key] : profileList[key]
+      } else {
+        user.profile[key] = profileList[key] ? profileList[key] : ''
+      }
+      
     }
 
     await new Promise((resolve, reject) => {
