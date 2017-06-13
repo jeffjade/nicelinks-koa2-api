@@ -1,5 +1,6 @@
 let Models = require('./../models/index')
 let $util = require('./../helper/util')
+let _ = require('lodash')
 
 const getNiceLinks = async (ctx, next) => {
   let options = $util.getQueryObject(ctx.request.url)
@@ -41,28 +42,32 @@ const addNiceLinks = async (ctx, next) => {
 const dispatchAction = async (ctx, next) => {
   let options = ctx.request.body
   try {
-    return await Models.Links.findOne({'_id': options._id}).then((result) => {
-      let actionTarget = options.action
-      let actionArrTarget = actionTarget + '_arr'
-
-      let actionArr = result[actionArrTarget]
-      actionArr[options.fingerprint] = !actionArr[options.fingerprint]
-
-      let count = 0
-      for (let index in actionArr) {
-        count = actionArr[index] ? count + 1 : count
+    let setting = {}
+    let count = 0
+    await Models.Links.findOne({'_id': options._id}).then((result) => {
+      let actionTarget = options.action + '_list'
+      let actionArr = result[actionTarget] || {}
+  
+      if (actionArr[options.fingerprint]) {
+        actionArr[options.fingerprint] = null
+        delete actionArr[options.fingerprint]
+      } else {
+        actionArr[options.fingerprint] = true
       }
 
-      let setting = {}
-      setting[actionTarget] = count
-      setting[actionArrTarget] = actionArr
+      count = _.size(actionArr)
+      setting[options.action] = count
+      setting[actionTarget] = actionArr
+    })
 
-      return Models.Links.update({'_id': options._id}, {$set: setting}).then(result => {
-        ctx.status = 200
-        ctx.body = {
-          count: count
-        }
-      })
+    return Models.Links.update({'_id': options._id}, {$set: setting}).then(result => {
+      console.log('result')
+      console.log(result)
+      ctx.status = 200
+      ctx.body = {
+        sussess: true,
+        count: count
+      }
     })
   } catch (error) {
     console.log('Something has gone wrong, Error messages are as follows: '.red)

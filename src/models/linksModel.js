@@ -27,19 +27,19 @@ const LinksSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  like: {
+  likes: {
     type: Number,
     default: 0
   },
-  like_arr: {
+  likes_list: {
     type: Object,
     default: {}
   },
-  dislike: {
+  dislikes: {
     type: Number,
     default: 0
   },
-  dislike_arr: {
+  dislikes_list: {
     type: Object,
     default: {}
   },
