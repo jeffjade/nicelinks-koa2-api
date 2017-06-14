@@ -41,6 +41,14 @@ const addNiceLinks = async (ctx, next) => {
 
 const dispatchAction = async (ctx, next) => {
   let options = ctx.request.body
+  if (!$util.verifyFingerprintEffective(options.fingerprint)) {
+    ctx.status = 428
+    ctx.body = {
+      sussess: false,
+      messages: '经验证，所传递的浏览器指纹不合法'
+    }
+    return
+  }
   try {
     let setting = {}
     let count = 0
@@ -73,7 +81,10 @@ const dispatchAction = async (ctx, next) => {
     console.log('Something has gone wrong, Error messages are as follows: '.red)
     console.log(error)
     ctx.status = 500
-    ctx.body = 'Opps, Something Error :' + error
+    ctx.body = {
+      sussess: false,
+      messages: 'Opps, Something Error :' + error
+    }
   }
 }
 

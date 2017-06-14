@@ -12,6 +12,11 @@ module.exports = {
     return objURL
   },
 
+  verifyFingerprintEffective (fingerprint) {
+    let regExp = new RegExp("^[A-Za-z0-9]{24}$|^[A-Za-z0-9]{32}$")
+    return regExp.test(fingerprint)
+  },
+
   queryString (url, query) {
     let str = []
     for (let key in query) {
