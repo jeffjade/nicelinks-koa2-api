@@ -31,17 +31,9 @@ const LinksSchema = new mongoose.Schema({
     type: Number,
     default: 0
   },
-  likes_list: {
-    type: Object,
-    default: {}
-  },
   dislikes: {
     type: Number,
     default: 0
-  },
-  dislikes_list: {
-    type: Object,
-    default: {}
   },
   social: {
     type: Object,

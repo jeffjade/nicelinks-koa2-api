@@ -1,4 +1,4 @@
-let Models = require('./../models/index')
+let {Links, Actions} = require('./../models/index')
 let $util = require('./../helper/util')
 let _ = require('lodash')
 
@@ -13,12 +13,10 @@ const getNiceLinks = async (ctx, next) => {
   let limitNumber = parseInt(options.pageSize)
   let skipNumber = (parseInt(options.pageCount) - 1) * limitNumber
   try {
-    return await Models.Links.find(params).sort(sortParam).limit(limitNumber).skip(skipNumber).exec().then(result => {
-      console.log(result)
-      ctx.body = result
+    return await Links.find(params).sort(sortParam).limit(limitNumber).skip(skipNumber).exec().then(result => {
+      $util.sendSuccess(ctx, result)
     })
   } catch (error) {
-    console.log(error)
     ctx.status = 500
     ctx.body = 'Opps, Something Error :' + error
   }
@@ -27,13 +25,12 @@ const getNiceLinks = async (ctx, next) => {
 const addNiceLinks = async (ctx, next) => {
   let options = ctx.request.body
   try {
-    return await Models.Links.create(options).then((result) => {
-      ctx.status = 200
-      ctx.body = {}
+    return await Links.create(options).then(async (result) => {
+      await Actions.create({'link_id': result._id}).then(res => {
+        $util.sendSuccess(ctx, result)
+      })
     })
   } catch (error) {
-    console.log('Something has gone wrong, Error messages are as follows: '.red)
-    console.log(error)
     ctx.status = 500
     ctx.body = 'Opps, Something Error :' + error
   }
@@ -50,9 +47,11 @@ const dispatchAction = async (ctx, next) => {
     return
   }
   try {
-    let setting = {}
+    let linkSeting = {}
+    let actionsSetting = {}
     let count = 0
-    await Models.Links.findOne({'_id': options._id}).then((result) => {
+
+    await Actions.findOne({'link_id': options._id}).then(result => {
       let actionTarget = options.action + '_list'
       let actionArr = result[actionTarget] || {}
   
@@ -64,23 +63,18 @@ const dispatchAction = async (ctx, next) => {
       }
 
       count = _.size(actionArr)
-      setting[options.action] = count
-      setting[actionTarget] = actionArr
+      linkSeting[options.action] = count
+      actionsSetting[actionTarget] = actionArr
     })
 
-    return Models.Links.update({'_id': options._id}, {$set: setting}).then(result => {
-      console.log('result')
-      console.log(result)
-      ctx.status = 200
-      ctx.body = {
-        sussess: true,
-        count: count
-      }
+    // update Links action record(likes or dislikes)
+    await Links.update({'_id': options._id}, {$set: linkSeting})
+
+    await Actions.update({'link_id': options._id}, {$set: actionsSetting}).then(result => {
+      $util.sendSuccess(ctx, {count: count})
     })
   } catch (error) {
     console.log('Something has gone wrong, Error messages are as follows: '.red)
-    console.log(error)
-    ctx.status = 500
     ctx.body = {
       sussess: false,
       messages: 'Opps, Something Error :' + error

@@ -1,4 +1,19 @@
 module.exports = {
+  sendSuccess (ctx, result) {
+    ctx.status = 200
+    ctx.body = {
+      success: true,
+      value: result
+    }
+  },
+
+  sendFailure (ctx, signStr) {
+    ctx.body = {
+      success: false,
+      message: signStr
+    }
+  },
+   
   query (search) {
     let str = search || window.location.search
     let objURL = {}

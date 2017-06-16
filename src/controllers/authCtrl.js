@@ -69,11 +69,10 @@ exports.login = (ctx, next) => {
         maxAge: 30 * 60 * 1000,
         httpOnly: false
       })
-      ctx.status = 200
-      ctx.body = {
+      $util.sendSuccess(ctx, {
         role: user.role,
         _id: user._id
-      }
+      })
       return ctx.login(user)
     } else {
       ctx.status = 422
@@ -86,10 +85,7 @@ exports.logout = (ctx, next) => {
   ctx.cookies.set('NiceLinksLoginCookie', false)
   ctx.logout()
   ctx.status = 200
-  ctx.body = {
-    success: true,
-    message: 'logout successfully'
-  }
+  $util.sendSuccess(ctx, 'logout successfully')
 }
 
 exports.logoff = async( ctx ) => {
