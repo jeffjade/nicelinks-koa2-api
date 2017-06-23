@@ -7,46 +7,54 @@ mongoose.Promise = global.Promise
 
 // 定义 LinksSchema 数据表和数据结构
 const LinksSchema = new mongoose.Schema({
-  url_path: {
-    type: String,
-    required: true
-  },
-  title: {
-    type: String,
-    required: true
-  },
-  desc: {
-    type: String,
-    default: ''
-  },
-  tags: {
-    type: String,
-    required: true
-  },
-  classify: {
-    type: String,
-    required: true
-  },
-  likes: {
-    type: Number,
-    default: 0
-  },
-  dislikes: {
-    type: Number,
-    default: 0
-  },
-  social: {
-    type: Object,
-    default: {}
-  },
-  created: {
-    type: Date,
-    default: Date.now
-  },
-  updated: {
-    type: Date,
-    default: Date.now
-  }
+    url_path: {
+        type: String,
+        required: true
+    },
+    title: {
+        type: String,
+        required: true
+    },
+    desc: {
+        type: String,
+        default: ''
+    },
+    tags: {
+        type: String,
+        required: true
+    },
+    classify: {
+        type: String,
+        required: true
+    },
+    likes: {
+        type: Number,
+        default: 0
+    },
+    dislikes: {
+        type: Number,
+        default: 0
+    },
+    isLikes: {
+        type: Boolean,
+        default: false
+    },
+    isDislikes: {
+        type: Boolean,
+        default: false
+    },
+    social: {
+        type: Object,
+        default: {}
+    },
+    created: {
+        type: Date,
+        default: Date.now
+    },
+    updated: {
+        type: Date,
+        default: Date.now
+    }
 })
 
 // let BlogModel = mongoose.model('Blog', LinksSchema)
