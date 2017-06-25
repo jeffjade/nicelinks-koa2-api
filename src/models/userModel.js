@@ -34,11 +34,11 @@ const UserSchema = new Schema({
     type: Date
   },
   active: {
-      type: Boolean,
-      default: false
+    type: Boolean,
+    default: false
   },
   activeToken: String,
-  activeExpires: Date,
+  activeExpires: Date
 },
   {
     timestamps: true

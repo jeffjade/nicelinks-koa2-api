@@ -1,4 +1,6 @@
 let mongoose = require('mongoose')
+  Schema = mongoose.Schema,
+  ObjectId = mongoose.Schema.ObjectId
 
 /* Solve Problem: (node) DeprecationWarning:
   Mongoose: mpromise (mongoose's default promise library) is deprecated
@@ -9,6 +11,10 @@ mongoose.Promise = global.Promise
 const LinksSchema = new mongoose.Schema({
     url_path: {
         type: String,
+        required: true
+    },
+    userId: {
+        type: ObjectId,
         required: true
     },
     title: {

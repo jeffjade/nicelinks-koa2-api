@@ -17,6 +17,8 @@ router.post('/addNiceLinks', linksCtrl.addNiceLinks)
 
 router.post('/dispatchAction', linksCtrl.dispatchAction)
 
+router.get('/getMyPublish', linksCtrl.getMyPublish)
+
 // *********************Login Auth Register********************** Strat//
 const authRoutes = Router()
 

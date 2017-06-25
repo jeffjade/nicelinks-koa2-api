@@ -3,12 +3,10 @@ let $util = require('./../helper/util')
 let _ = require('lodash')
 
 const assemblyResultWithAction = (source, target, key) => {
-    console.log(key)
     let result = source.map(item => {
         for (let i in target) {
             let tItem = target[i]
             if ((item._id).toString() === (tItem.link_id).toString()) {
-                console.log(item._id)
                 item.isLikes = tItem.likes_list && !!tItem.likes_list[key] || false
                 item.isDislikes = tItem.dislikes_list && !!tItem.dislikes_list[key] || false
                 console.log(item)
@@ -48,7 +46,10 @@ const addNiceLinks = async(ctx, next) => {
     let options = ctx.request.body
     try {
         return await Links.create(options).then(async(result) => {
-            await Actions.create({ 'link_id': result._id }).then(res => {
+            let params = {
+              link_id: result._id
+            }
+            await Actions.create(params).then(res => {
                 $util.sendSuccess(ctx, result)
             })
         })
@@ -104,8 +105,23 @@ const dispatchAction = async(ctx, next) => {
     }
 }
 
+const getMyPublish = async(ctx, next) => {
+    let options = ctx.request.query
+    console.log(options)
+    try {
+        return await Links.find({ 'userId': options.userId }).then(result => {
+            console.log(result)
+            $util.sendSuccess(ctx, result)
+        })
+    } catch (error) {
+        ctx.status = 500
+        ctx.body = 'Opps, Something Error :' + error
+    }
+}
+
 module.exports = {
     getNiceLinks,
     addNiceLinks,
-    dispatchAction
+    dispatchAction,
+    getMyPublish
 }
