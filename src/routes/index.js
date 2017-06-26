@@ -6,7 +6,7 @@ let linksCtrl = require('../controllers/linksCtrl')
 let AuthController = require('../controllers/authCtrl')
 
 const router = Router({
-  prefix: '/api'
+    prefix: '/api'
 })
 
 router.get('/', indexCtrl)
@@ -43,6 +43,20 @@ authRoutes.post('/setProfile', AuthController.setProfile)
 authRoutes.get('/getProfile', AuthController.getProfile)
 
 router.use('/auth', authRoutes.routes())
-// *********************Login Auth Register********************** Strat//
+
+// api cors
+router.use(async(ctx, next) => {
+    ctx.set('Access-Control-Allow-Credentials', 'true')
+    ctx.set('Access-Control-Allow-Origin', ctx.get('origin') || '*')
+    await next()
+})
+
+// api options method
+router.options('*', async(ctx, next) => {
+    ctx.set('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
+    ctx.set('Access-Control-Allow-Origin', ctx.get('origin') || '*')
+    ctx.status = 204
+    await next()
+})
 
 module.exports = router
