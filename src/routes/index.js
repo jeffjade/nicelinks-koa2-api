@@ -23,6 +23,8 @@ router.get('/getMyPublish', linksCtrl.getMyPublish)
 const authRoutes = Router()
 
 // Registration route
+authRoutes.post('/checkIsExisted', AuthController.checkIsExisted)
+
 authRoutes.post('/signup', AuthController.register)
 
 // Login router

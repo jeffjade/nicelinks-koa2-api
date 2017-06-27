@@ -29,12 +29,16 @@ const getNiceLinks = async(ctx, next) => {
     let skipNumber = (parseInt(options.pageCount) - 1) * limitNumber
     try {
         return await Links.find(params).sort(sortParam).limit(limitNumber).skip(skipNumber).exec().then(async(result) => {
-            let idArr = result.map(item => {
-                return item._id
-            })
-            await Actions.find({ link_id: { $in: idArr } }).then(actionResult => {
-                $util.sendSuccess(ctx, assemblyResultWithAction(_.cloneDeep(result), actionResult, options.userId))
-            })
+            if (options.userId) {
+                let idArr = result.map(item => {
+                    return item._id
+                })
+                await Actions.find({ link_id: { $in: idArr } }).then(actionResult => {
+                    $util.sendSuccess(ctx, assemblyResultWithAction(_.cloneDeep(result), actionResult, options.userId))
+                })
+            } else {
+                $util.sendSuccess(ctx, result)
+            }
         })
     } catch (error) {
         ctx.status = 500
@@ -47,7 +51,7 @@ const addNiceLinks = async(ctx, next) => {
     try {
         return await Links.create(options).then(async(result) => {
             let params = {
-              link_id: result._id
+                link_id: result._id
             }
             await Actions.create(params).then(res => {
                 $util.sendSuccess(ctx, result)
