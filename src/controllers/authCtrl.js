@@ -112,7 +112,7 @@ exports.logoff = async(ctx) => {
 // ========================================
 // Registration Route
 // ========================================
-exports.register = async(ctx, next) => {
+exports.signup = async(ctx, next) => {
     const requestBody = ctx.request.body
     const email = requestBody.email
     const username = requestBody.username
@@ -139,6 +139,7 @@ exports.register = async(ctx, next) => {
     } else {
         let buf = crypto.randomBytes(20)
         let user = new UserModel({
+            username: username,
             email: email,
             password: password,
             profile: {}
@@ -297,6 +298,7 @@ exports.getProfile = async(ctx, next) => {
         ctx.body = {
             success: true,
             value: {
+                username: user.username,
                 profile: user.profile,
                 email: user.email,
                 role: user.role,

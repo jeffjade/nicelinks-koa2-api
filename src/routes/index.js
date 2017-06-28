@@ -25,7 +25,7 @@ const authRoutes = Router()
 // Registration route
 authRoutes.post('/checkIsExisted', AuthController.checkIsExisted)
 
-authRoutes.post('/signup', AuthController.register)
+authRoutes.post('/signup', AuthController.signup)
 
 // Login router
 authRoutes.post('/login', AuthController.login)
