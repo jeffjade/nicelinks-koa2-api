@@ -160,11 +160,7 @@ exports.signup = async(ctx, next) => {
                     resolve()
                 })
             })
-            ctx.status = 200
-            ctx.body = {
-                success: true,
-                message: `已发送邮件至 ${user.email} 请在24小时内按照邮件提示激活。`
-            }
+            $util.sendSuccess(ctx, `已发送邮件至 ${user.email} 请在24小时内按照邮件提示激活。`)
         } catch (err) {
             throw err
         }
@@ -176,7 +172,6 @@ exports.signup = async(ctx, next) => {
 // ========================================
 exports.active = async(ctx, next) => {
     const requestBody = ctx.request.body
-        // 找到激活码对应的用户
     let user = await UserModel.findOne({
         activeToken: requestBody.activeToken,
         // 过期时间 > 当前时间
@@ -199,12 +194,7 @@ exports.active = async(ctx, next) => {
                 resolve()
             })
         })
-
-        ctx.status = 200
-        ctx.body = {
-            success: true,
-            message: `Successfully Activated`
-        }
+        $util.sendSuccess(ctx, `Successfully Activated`)
     } catch (err) {
         throw err
     }

@@ -53,12 +53,4 @@ router.use(async(ctx, next) => {
     await next()
 })
 
-// api options method
-router.options('*', async(ctx, next) => {
-    ctx.set('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
-    ctx.set('Access-Control-Allow-Origin', ctx.get('origin') || '*')
-    ctx.status = 204
-    await next()
-})
-
 module.exports = router
