@@ -11,6 +11,8 @@ mongoose.Promise = global.Promise
 const LinksSchema = new mongoose.Schema({
     urlPath: {
         type: String,
+        lowercase: true,
+        unique: true,
         required: true
     },
     userId: {
@@ -66,7 +68,7 @@ const LinksSchema = new mongoose.Schema({
 // let BlogModel = mongoose.model('Blog', LinksSchema)
 
 // let option = {
-//   url_path: 'http://jeffjade.com',
+//   urlPath: 'http://jeffjade.com',
 //   title: '晚晴幽草轩',
 //   desc: '效率至上，經世济用',
 //   tags: '前端',
@@ -99,6 +101,6 @@ BlogModel.create(option, function (error, doc) {
 //   console.log(error, docs)
 // })
 
-// 使用 url_path 字段作为索引
-// LinksSchema.index({ url_path: 1 })
+// 使用 urlPath 字段作为索引
+// LinksSchema.index({ urlPath: 1 })
 module.exports = mongoose.model('Links', LinksSchema)
