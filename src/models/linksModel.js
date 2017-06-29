@@ -1,5 +1,5 @@
-let mongoose = require('mongoose')
-Schema = mongoose.Schema,
+let mongoose = require('mongoose'),
+    Schema = mongoose.Schema,
     ObjectId = mongoose.Schema.ObjectId
 
 /* Solve Problem: (node) DeprecationWarning:
