@@ -13,12 +13,19 @@ let session = require('koa-session2')
 let KoaStatic = require('koa-static')
 let KoaMount = require('koa-mount')
 let config = require('./config')
-let cors = require('kcors')
+let cors = require('koa2-cors')
 
 const app = new Koa()
 const bodyparser = Bodyparser()
 
-app.use(cors())
+app.use(cors({
+    origin: '*',
+    exposeHeaders: ['WWW-Authenticate', 'Server-Authorization'],
+    maxAge: 5,
+    credentials: true,
+    allowMethods: ['GET', 'POST', 'DELETE'],
+    allowHeaders: ['Content-Type', 'Authorization', 'Accept'],
+}))
 
 // middlewares
 app.use(convert(bodyparser))
