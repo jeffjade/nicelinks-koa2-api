@@ -8,6 +8,7 @@ let AuthController = require('../controllers/authCtrl')
 const router = Router({
     prefix: '/api'
 })
+
 router.get('/', indexCtrl)
 
 router.get('/getNiceLinks', linksCtrl.getNiceLinks)
