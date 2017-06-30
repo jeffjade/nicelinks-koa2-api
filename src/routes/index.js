@@ -9,6 +9,26 @@ const router = Router({
     prefix: '/api'
 })
 
+// api cors
+router.use(async(ctx, next) => {
+    // ctx.set('Access-Control-Allow-Origin', ctx.get('origin') || '*')
+    ctx.set('Access-Control-Allow-Origin', '*')
+    ctx.set('Access-Control-Allow-Credentials', 'true')
+    ctx.set("Content-Type", "application/json;charset=utf-8");
+    await next()
+})
+
+// api options method
+router.options('*', async(ctx, next) => {
+    console.log("ctx.get('origin')")
+    console.log(ctx.get('origin'))
+    ctx.set('Access-Control-Allow-Origin', '*')
+    ctx.set('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
+    ctx.set("Content-Type", "application/json;charset=utf-8");
+    ctx.status = 204
+    await next()
+})
+
 router.get('/', indexCtrl)
 
 router.get('/getNiceLinks', linksCtrl.getNiceLinks)
@@ -21,6 +41,26 @@ router.get('/getMyPublish', linksCtrl.getMyPublish)
 
 // *********************Login Auth Register********************** Strat//
 const authRoutes = Router()
+
+// api cors
+authRoutes.use(async(ctx, next) => {
+    // ctx.set('Access-Control-Allow-Origin', ctx.get('origin') || '*')
+    ctx.set('Access-Control-Allow-Origin', '*')
+    ctx.set('Access-Control-Allow-Credentials', 'true')
+    ctx.set("Content-Type", "application/json;charset=utf-8");
+    await next()
+})
+
+// api options method
+authRoutes.options('*', async(ctx, next) => {
+    console.log("ctx.get('origin')")
+    console.log(ctx.get('origin'))
+    ctx.set('Access-Control-Allow-Origin', '*')
+    ctx.set("Content-Type", "application/json;charset=utf-8");
+    ctx.set('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
+    ctx.status = 204
+    await next()
+})
 
 // Registration route
 authRoutes.post('/checkIsExisted', AuthController.checkIsExisted)
@@ -45,23 +85,5 @@ authRoutes.post('/setProfile', AuthController.setProfile)
 authRoutes.get('/getProfile', AuthController.getProfile)
 
 router.use('/auth', authRoutes.routes())
-
-// api cors
-router.use(async(ctx, next) => {
-    // ctx.set('Access-Control-Allow-Origin', ctx.get('origin') || '*')
-    ctx.set('Access-Control-Allow-Credentials', 'true')
-    await next()
-})
-
-// api options method
-router.options('*', async(ctx, next) => {
-    console.log("ctx.get('origin')")
-    console.log(ctx.get('origin'))
-        // ctx.set('Access-Control-Allow-Origin', ctx.get('origin') || '*')
-    ctx.set('Access-Control-Allow-Origin', '*')
-    ctx.set('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
-    ctx.status = 204
-    await next()
-})
 
 module.exports = router
