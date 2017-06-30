@@ -48,8 +48,19 @@ router.use('/auth', authRoutes.routes())
 
 // api cors
 router.use(async(ctx, next) => {
+    // ctx.set('Access-Control-Allow-Origin', ctx.get('origin') || '*')
     ctx.set('Access-Control-Allow-Credentials', 'true')
-    ctx.set('Access-Control-Allow-Origin', ctx.get('origin') || '*')
+    await next()
+})
+
+// api options method
+router.options('*', async(ctx, next) => {
+    console.log("ctx.get('origin')")
+    console.log(ctx.get('origin'))
+        // ctx.set('Access-Control-Allow-Origin', ctx.get('origin') || '*')
+    ctx.set('Access-Control-Allow-Origin', '*')
+    ctx.set('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
+    ctx.status = 204
     await next()
 })
 
