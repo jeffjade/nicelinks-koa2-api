@@ -13,25 +13,12 @@ let session = require('koa-session2')
 let KoaStatic = require('koa-static')
 let KoaMount = require('koa-mount')
 let config = require('./config')
-let cors = require('koa2-cors')
+let cors = require('kcors')
 
 const app = new Koa()
 const bodyparser = Bodyparser()
 
-app.use(cors({
-    origin: function(ctx) {
-        console.log(ctx.header.referer)
-        if (ctx.header.referer.indexOf('nicelinks.site') === -1) {
-            return false
-        }
-        return '*'
-    },
-    exposeHeaders: ['WWW-Authenticate', 'Server-Authorization'],
-    maxAge: 5,
-    credentials: true,
-    allowMethods: ['GET', 'POST', 'DELETE'],
-    allowHeaders: ['Content-Type', 'Authorization', 'Accept'],
-}))
+app.use(cors())
 
 // middlewares
 app.use(convert(bodyparser))
