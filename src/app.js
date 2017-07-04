@@ -18,7 +18,13 @@ let cors = require('koa2-cors')
 const app = new Koa()
 const bodyparser = Bodyparser()
 
-app.use(cors())
+app.use(cors({
+    origin: 'http://localhost:8888',
+    maxAge: 1000,
+    credentials: true,
+    allowMethods: ['GET', 'POST', 'DELETE'],
+    allowHeaders: ['Content-Type', 'Authorization', 'Accept']
+}))
 
 // middlewares
 app.use(convert(bodyparser))

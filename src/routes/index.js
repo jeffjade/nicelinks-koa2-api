@@ -1,15 +1,37 @@
 let Router = require('koa-router')
-
-let indexCtrl = require('../controllers/indexCtrl')
 let linksCtrl = require('../controllers/linksCtrl')
-
 let AuthController = require('../controllers/authCtrl')
+let fs = require("fs")
+let {join} = require("path")
 
 const router = Router({
     prefix: '/api'
 })
 
-router.get('/', indexCtrl)
+// api cors
+router.use(async (ctx, next) => {
+  ctx.set('Access-Control-Allow-Credentials', true)
+  ctx.set('Access-Control-Allow-Origin', '*')
+  await next()
+})
+
+// api options method
+router.options('*', async (ctx, next) => {
+  ctx.set('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
+  ctx.set('Access-Control-Allow-Origin', '*')
+  ctx.status = 200
+  await next()
+})
+
+router.get('/index', async (ctx, next) => {
+  let indexPage = join(__dirname, '../../public/index.html')
+  let content = await fs.readFileSync(indexPage, 'utf-8')
+  ctx.body = content
+})
+
+router.get('/login', ctx => {
+  ctx.redirect('/login/')
+})
 
 router.get('/getNiceLinks', linksCtrl.getNiceLinks)
 
@@ -22,13 +44,28 @@ router.get('/getMyPublish', linksCtrl.getMyPublish)
 // *********************Login Auth Register********************** Strat//
 const authRoutes = Router()
 
+// api cors
+authRoutes.use(async (ctx, next) => {
+  ctx.set('Access-Control-Allow-Credentials', true)
+  ctx.set('Access-Control-Allow-Origin', '*')
+  await next()
+})
+
+// api options method
+authRoutes.options('*', async (ctx, next) => {
+  ctx.set('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
+  ctx.set('Access-Control-Allow-Origin', '*')
+  ctx.status = 200
+  await next()
+})
+
 // Registration route
 authRoutes.post('/checkIsExisted', AuthController.checkIsExisted)
 
 authRoutes.post('/signup', AuthController.signup)
 
 // Login router
-authRoutes.post('/login', AuthController.login)
+router.post('/login', AuthController.login)
 
 // logout router
 authRoutes.post('/logout', AuthController.logout)
@@ -44,6 +81,6 @@ authRoutes.post('/setProfile', AuthController.setProfile)
 
 authRoutes.get('/getProfile', AuthController.getProfile)
 
-router.use('/auth', authRoutes.routes())
+// router.use('/auth', authRoutes.routes())
 
 module.exports = router

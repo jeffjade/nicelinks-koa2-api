@@ -80,6 +80,7 @@ exports.login = (ctx, next) => {
                 maxAge: 30 * 60 * 1000,
                 httpOnly: false
             })
+
             $util.sendSuccess(ctx, {
                 role: user.role,
                 _id: user._id
