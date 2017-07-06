@@ -26,7 +26,7 @@ let typeList = {
   }
 }
 
-let mailTemp = fs.readFileSync(path.join(__dirname, 'mailTemp.html'),{encoding:'utf-8'})
+let mailTemp = fs.readFileSync(path.join(__dirname, './../../views/mailTemp.html'),{encoding:'utf-8'})
 
 let sendMail = (params = {}) => {
   let htmlBody = mailTemp

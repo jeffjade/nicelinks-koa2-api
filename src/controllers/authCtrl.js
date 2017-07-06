@@ -4,7 +4,7 @@ const jwt = require('jsonwebtoken'),
     config = require('../config/main'),
     passport = require('../config/passport'),
     sendMail = require('../helper/nodemailer'),
-    $util = require('./../helper/util')
+    $util = require('../helper/util')
 
 // Middleware to require login/auth
 const requireAuth = passport.authenticate('jwt', { session: false })

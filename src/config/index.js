@@ -1,4 +1,4 @@
 module.exports = {
-  main: require('./main'),
-  passport: require('./passport')
+  main: require('./main.js'),
+  passport: require('./passport.js')
 }
