@@ -5,21 +5,21 @@ let views = require('koa-views')
 let convert = require('koa-convert')
 let json = require('koa-json')
 let Bodyparser = require('koa-bodyparser')
-let logger = require('koa-logger')
 let koaStatic = require('koa-static-plus')
 let koaOnError = require('koa-onerror')
 let KoaHelmet = require('koa-helmet')
 let session = require('koa-session2')
 let KoaStatic = require('koa-static')
 let KoaMount = require('koa-mount')
-let config = require('./config')
 let cors = require('koa2-cors')
+let config = require('./config')
+let logger = require('./helper/logger')
 
 const app = new Koa()
 const bodyparser = Bodyparser()
 
 app.use(cors({
-    origin: 'http://localhost:8888',
+    origin: '*',
     maxAge: 1000,
     credentials: true,
     allowMethods: ['GET', 'POST', 'DELETE'],
@@ -29,7 +29,6 @@ app.use(cors({
 // middlewares
 app.use(convert(bodyparser))
 app.use(convert(json()))
-app.use(convert(logger()))
 app.use(KoaHelmet())
 
 app.proxy = true
@@ -43,7 +42,7 @@ app.use(convert(koaStatic(path.join(__dirname, '../public'), {
 })))
 
 // upload avatar
-app.use(KoaMount('/upload/avatar', KoaStatic(config.main.avatarUploadDir)))
+app.use(KoaMount('/api/upload/avatar', KoaStatic(config.main.avatarUploadDir)))
 
 // views
 app.use(views(path.join(__dirname, '../views'), {
@@ -65,6 +64,10 @@ app.use(async(ctx, next) => {
 
 // response router
 app.use(async(ctx, next) => {
+    if (ctx.request.url.indexOf('api') === -1) {
+        ctx.redirect(ctx.request.url)
+        return
+    }
     await require('./routes').routes()(ctx, next)
 })
 
@@ -76,7 +79,7 @@ app.use(async(ctx) => {
 
 // error logger
 app.on('error', async(err, ctx) => {
-    console.log('error occured:', err)
+    logger.error('app.on error:', { err: err.stack })
 })
 
 const port = parseInt(config.main.port || '3000')

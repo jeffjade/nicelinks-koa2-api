@@ -18,7 +18,6 @@ const assemblyResultWithAction = (source, target, key) => {
 }
 
 const getNiceLinks = async(ctx, next) => {
-    console.log('getNiceLinks')
     let options = $util.getQueryObject(ctx.request.url)
     let params = {}
     let sortParam = {}

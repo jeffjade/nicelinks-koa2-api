@@ -83,7 +83,8 @@ exports.login = (ctx, next) => {
 
             $util.sendSuccess(ctx, {
                 role: user.role,
-                _id: user._id
+                _id: user._id,
+                username: user.username
             })
             return ctx.login(user)
         } else {
@@ -266,12 +267,7 @@ exports.setProfile = async(ctx, next) => {
                 resolve()
             })
         })
-
-        ctx.status = 200
-        ctx.body = {
-            success: true,
-            message: `Set Successfully`
-        }
+        $util.sendSuccess(ctx, 'Nice, Set Successfully')
     }
 }
 
