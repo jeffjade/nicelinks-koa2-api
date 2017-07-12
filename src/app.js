@@ -14,6 +14,7 @@ let KoaMount = require('koa-mount')
 let cors = require('koa2-cors')
 let config = require('./config')
 let logger = require('./helper/logger')
+let fs = require('fs')
 
 const app = new Koa()
 const bodyparser = Bodyparser()
@@ -65,7 +66,9 @@ app.use(async(ctx, next) => {
 // response router
 app.use(async(ctx, next) => {
     if (ctx.request.url.indexOf('api') === -1) {
-        ctx.redirect(ctx.request.url)
+        let filePath = __dirname + '/../public/index.html'
+        let content = fs.readFileSync(filePath, 'utf8')
+        ctx.body = content
         return
     }
     await require('./routes').routes()(ctx, next)
