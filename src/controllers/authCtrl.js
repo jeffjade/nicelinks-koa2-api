@@ -271,7 +271,7 @@ exports.setProfile = async(ctx, next) => {
     }
 }
 
-exports.getProfile = async(ctx, next) => {
+exports.getProfile = async (ctx, next) => {
     const requestBody = ctx.request.query
     let user = await findUser({ _id: requestBody._id })
     if (!user) {
@@ -281,17 +281,13 @@ exports.getProfile = async(ctx, next) => {
             message: `没找见对用的账户。`
         }
     } else {
-        ctx.status = 200
-        ctx.body = {
-            success: true,
-            value: {
-                username: user.username,
-                profile: user.profile,
-                email: user.email,
-                role: user.role,
-                _id: user._id
-            }
-        }
+        $util.sendSuccess(ctx, {
+            username: user.username,
+            profile: user.profile,
+            email: user.email,
+            role: user.role,
+            _id: user._id
+        })
     }
 }
 
