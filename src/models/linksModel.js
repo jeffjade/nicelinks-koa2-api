@@ -19,6 +19,10 @@ const LinksSchema = new mongoose.Schema({
         type: ObjectId,
         required: true
     },
+    createdBy: {
+        type: String,
+        required: true
+    },
     title: {
         type: String,
         required: true
