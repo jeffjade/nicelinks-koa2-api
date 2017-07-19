@@ -1,6 +1,7 @@
 let Router = require('koa-router')
 let linksCtrl = require('../controllers/linksCtrl')
 let AuthController = require('../controllers/authCtrl')
+let HelpController = require('../controllers/helpCtrl')
 let fs = require("fs")
 let {join} = require("path")
 
@@ -64,5 +65,7 @@ router.post('/setProfile', AuthController.setProfile)
 router.get('/getProfile', AuthController.getProfile)
 
 // router.use('/auth', authRoutes.routes())
+
+router.get('/crawlLinksInfo', HelpController.crawlLinksInfo)
 
 module.exports = router

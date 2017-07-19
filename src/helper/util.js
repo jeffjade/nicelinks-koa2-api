@@ -6,6 +6,9 @@
       (new Date()).Format("YYYY-M-D h:m:s.S")      ==> 2006-7-2 8:9:4.18
 */
 
+let http = require('http')
+let cheerio = require('cheerio')
+
 Date.prototype.Format = function (fmt) {
   var o = {
     'M+': this.getMonth() + 1,
@@ -91,5 +94,43 @@ module.exports = {
             obj[name] = val;
         });
         return obj;
+    },
+
+    crawlWebPageByUrl (url, callback) {
+        http.get(url, function (res) {
+            let data = ''
+
+            res.on('data', function (chunk) {
+                data += chunk
+            })
+
+            res.on('end', function () {
+                callback(null, data)
+            })
+        }).on('error', function (err) {
+            console.log("Opps, Download Error Occurred !" + err)
+            callback(err)
+        })
+    },
+
+    getWebPageInfo (url) {
+        return new Promise((resolve, reject) => {
+            this.crawlWebPageByUrl(url, (err, body) => {
+                try {
+                    let $ = cheerio.load(body)
+                    console.log($("title").text())
+                    console.log($("description").text())
+                    if (err) { reject({}) }
+                    let result = {
+                        title: $("title").text(),
+                        desc: $("description").text()
+                    }
+                    resolve(result)
+                } catch (err) {
+                    console.log(err)
+                    resolve({})
+                }
+            })
+        })
     }
 }

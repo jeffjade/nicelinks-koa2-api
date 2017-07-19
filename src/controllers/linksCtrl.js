@@ -116,10 +116,8 @@ const dispatchAction = async(ctx, next) => {
 
 const getMyPublish = async(ctx, next) => {
     let options = ctx.request.query
-    console.log(options)
     try {
         return await Links.find({ 'userId': options.userId }).then(result => {
-            console.log(result)
             $util.sendSuccess(ctx, result)
         })
     } catch (error) {
