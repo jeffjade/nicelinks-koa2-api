@@ -12,7 +12,7 @@
     "clean": "rm -rf app/",
     "test": "mocha -u bdd --compilers js:babel-core/register",
     "commit": "git add . && git commit -a && git pull && git push",
-    "deploy": "git pull && npm run clean && npm run compile && pm2 start app/index.js --name 'nicelinks-koa2-api'"
+    "deploy": "git pull && npm run clean && npm run compile && pm2 restart app/index.js --name 'nicelinks-koa2-api'"
   },
   "engines": {
     "node": ">= 4"
