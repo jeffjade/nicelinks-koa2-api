@@ -53,6 +53,29 @@ const logoffUserById = (id) => {
     })
 }
 
+const setTokenAndSendMail = async (user, ctx) => {
+    // 保证激活码不会重复
+    let buf = crypto.randomBytes(20)
+    user.activeToken = user._id + buf.toString('hex')
+    user.activeExpires = Date.now() + 24 * 3600 * 1000
+    let link = `${config.clientPath}/account?activeToken=` + user.activeToken
+
+    // 发送激活邮件
+    sendMail({ to: user.email, type: 'active', link: link })
+
+    try {
+        await new Promise((resolve, reject) => {
+            user.save((err) => {
+                if (err) { reject(err) }
+                resolve()
+            })
+        })
+        $util.sendSuccess(ctx, `已发送邮件至 ${user.email} 请在24小时内按照邮件提示激活。`)
+    } catch (err) {
+        throw err
+    }
+}
+
 // ========================================
 // Login Route
 // ========================================
@@ -133,39 +156,25 @@ exports.signup = async(ctx, next) => {
     if (!password) {
         return sendResponse(ctx, 421, 'You must enter a password.')
     }
+    const user = await findUser({ email: email })
 
-    const doc = await findUser({ email: email })
-
-    if (doc) {
-        return sendResponse(ctx, 422, 'The mailbox you filled in has been registered.')
+    if (user) {
+        // 如果已经注册但未激活，重新发送激活信息
+        if (!user.active) {
+            user.username = username
+            user.password = password
+            return setTokenAndSendMail(user, ctx)
+        } else {
+            return sendResponse(ctx, 422, 'The mailbox you filled in has been registered.')
+        }
     } else {
-        let buf = crypto.randomBytes(20)
         let user = new UserModel({
             username: username,
             email: email,
             password: password,
             profile: {}
         })
-
-        // 保证激活码不会重复
-        user.activeToken = user._id + buf.toString('hex')
-        user.activeExpires = Date.now() + 24 * 3600 * 1000
-        let link = `${config.clientPath}/account?activeToken=` + user.activeToken
-
-        // 发送激活邮件
-        sendMail({ to: user.email, type: 'active', link: link })
-
-        try {
-            await new Promise((resolve, reject) => {
-                user.save((err) => {
-                    if (err) { reject(err) }
-                    resolve()
-                })
-            })
-            $util.sendSuccess(ctx, `已发送邮件至 ${user.email} 请在24小时内按照邮件提示激活。`)
-        } catch (err) {
-            throw err
-        }
+        return setTokenAndSendMail(user)
     }
 }
 
@@ -243,6 +252,7 @@ exports.requestResetPwd = async(ctx, next) => {
 exports.setProfile = async(ctx, next) => {
     const requestBody = ctx.request.body
     let user = await findUser({ _id: requestBody._id })
+    console.log(user)
     if (!user) {
         ctx.status = 427
         ctx.body = {
@@ -252,15 +262,10 @@ exports.setProfile = async(ctx, next) => {
     } else {
         let profileList = requestBody.profile
         for (let key in profileList) {
-            // user.profile[key] = profileList[key] ? profileList[key] : user.profile[key]
-            if (key === 'username') {
-                user.profile[key] = user.profile[key] ? user.profile[key] : profileList[key]
-            } else {
-                user.profile[key] = profileList[key] ? profileList[key] : ''
-            }
-
+            user.profile[key] = profileList[key] ||  ''
         }
-
+        if (!user.username) { user.username = requestBody.username }
+        console.log('0-0')
         await new Promise((resolve, reject) => {
             user.save((err) => {
                 if (err) { reject(err) }
