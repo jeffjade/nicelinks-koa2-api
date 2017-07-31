@@ -8,6 +8,7 @@
 
 let http = require('http')
 let cheerio = require('cheerio')
+let msgConfig = require('./msgConfig.js')
 
 Date.prototype.Format = function (fmt) {
   var o = {
@@ -38,9 +39,10 @@ module.exports = {
     },
 
     sendFailure(ctx, signStr) {
+        console.log(ctx.cookies.set('NiceLinksLoginCookie'))
         ctx.body = {
             success: false,
-            message: signStr
+            message: msgConfig[signStr]['zh']
         }
     },
 

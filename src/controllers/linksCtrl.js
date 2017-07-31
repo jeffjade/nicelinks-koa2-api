@@ -9,7 +9,6 @@ const assemblyResultWithAction = (source, target, key) => {
             if ((item._id).toString() === (tItem.link_id).toString()) {
                 item.isLikes = tItem.likes_list && !!tItem.likes_list[key] || false
                 item.isDislikes = tItem.dislikes_list && !!tItem.dislikes_list[key] || false
-                console.log(item)
             }
         }
         return item

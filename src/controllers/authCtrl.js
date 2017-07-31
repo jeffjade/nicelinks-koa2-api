@@ -94,9 +94,7 @@ exports.login = (ctx, next) => {
     return passport.authenticate('local', (err, user, info, status) => {
         if (user) {
             if (!user.active) {
-                ctx.status = 423
-                ctx.body = '此账号尚未激活'
-                return
+                return $util.sendFailure(ctx, 'accountNoActive')
             }
 
             ctx.cookies.set('NiceLinksLoginCookie', true, {
@@ -111,8 +109,7 @@ exports.login = (ctx, next) => {
             })
             return ctx.login(user)
         } else {
-            ctx.status = 422
-            ctx.body = info.error
+            $util.sendFailure(ctx, 'wrongAccountOrPwd')
         }
     })(ctx, next)
 }
@@ -252,7 +249,6 @@ exports.requestResetPwd = async(ctx, next) => {
 exports.setProfile = async(ctx, next) => {
     const requestBody = ctx.request.body
     let user = await findUser({ _id: requestBody._id })
-    console.log(user)
     if (!user) {
         ctx.status = 427
         ctx.body = {
@@ -265,7 +261,6 @@ exports.setProfile = async(ctx, next) => {
             user.profile[key] = profileList[key] ||  ''
         }
         if (!user.username) { user.username = requestBody.username }
-        console.log('0-0')
         await new Promise((resolve, reject) => {
             user.save((err) => {
                 if (err) { reject(err) }
