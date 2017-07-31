@@ -120,12 +120,11 @@ module.exports = {
             this.crawlWebPageByUrl(url, (err, body) => {
                 try {
                     let $ = cheerio.load(body)
-                    console.log($("title").text())
-                    console.log($("description").text())
                     if (err) { reject({}) }
+                    let description = $('meta[name="description"]').attr('content')
                     let result = {
-                        title: $("title").text(),
-                        desc: $("description").text()
+                        title: $("title").text() || $('meta[og:title"]').attr('content'),
+                        desc:  description || $('meta[property="og:description"]').attr('content')
                     }
                     resolve(result)
                 } catch (err) {
