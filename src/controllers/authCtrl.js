@@ -101,6 +101,10 @@ exports.login = (ctx, next) => {
                 maxAge: 30 * 60 * 1000,
                 httpOnly: false
             })
+            console.log(ctx.cookies.set('NiceLinksLoginCookie'))
+            console.log(ctx.session)
+            console.log('-------')
+            // console.log(ctx.cookies.get('NiceLinksLoginCookie'))
 
             $util.sendSuccess(ctx, {
                 role: user.role,

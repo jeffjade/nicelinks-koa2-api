@@ -39,7 +39,7 @@ module.exports = {
     },
 
     sendFailure(ctx, signStr) {
-        console.log(ctx.cookies.set('NiceLinksLoginCookie'))
+        // console.log(ctx.cookies.set('NiceLinksLoginCookie'))
         ctx.body = {
             success: false,
             message: msgConfig[signStr]['zh']
