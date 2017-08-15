@@ -96,16 +96,10 @@ exports.login = (ctx, next) => {
             if (!user.active) {
                 return $util.sendFailure(ctx, 'accountNoActive')
             }
-
             ctx.cookies.set('NiceLinksLoginCookie', true, {
                 maxAge: 30 * 60 * 1000,
                 httpOnly: false
             })
-            console.log(ctx.cookies.set('NiceLinksLoginCookie'))
-            console.log(ctx.session)
-            console.log('-------')
-            // console.log(ctx.cookies.get('NiceLinksLoginCookie'))
-
             $util.sendSuccess(ctx, {
                 role: user.role,
                 _id: user._id,
