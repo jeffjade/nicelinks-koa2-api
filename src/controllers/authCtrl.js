@@ -84,7 +84,7 @@ exports.checkIsExisted = async(ctx, next) => {
     const username = requestBody.username
     const doc = await findUser({ username: username })
     if (doc) {
-        return sendResponse(ctx, 422, 'The name has been registered.')
+        return $util.sendFailure(ctx, 'nameHadRegistered')
     } else {
         $util.sendSuccess(ctx, true)
     }
