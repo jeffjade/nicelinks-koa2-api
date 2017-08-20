@@ -38,11 +38,10 @@ module.exports = {
         }
     },
 
-    sendFailure(ctx, signStr) {
-        // console.log(ctx.cookies.set('NiceLinksLoginCookie'))
+    sendFailure(ctx, signStr, errMsg) {
         ctx.body = {
             success: false,
-            message: msgConfig[signStr]['zh']
+            message: signStr ? msgConfig[signStr]['zh'] : errMsg
         }
     },
 

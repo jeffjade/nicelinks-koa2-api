@@ -22,6 +22,7 @@ const getNiceLinks = async(ctx, next) => {
     let sortParam = {}
 
     options.classify ? params.classify = options.classify : ''
+    options._id ? params._id = options._id : ''
     options.sortTarget ? sortParam[options.sortTarget] = options.sortType : ''
 
     let limitNumber = parseInt(options.pageSize)
@@ -31,8 +32,7 @@ const getNiceLinks = async(ctx, next) => {
             .sort(sortParam)
             .limit(limitNumber)
             .skip(skipNumber)
-            .exec()
-            .then(async(result) => {
+            .exec().then(async(result) => {
                 if (options.userId) {
                     let idArr = result.map(item => {
                         return item._id
@@ -45,8 +45,7 @@ const getNiceLinks = async(ctx, next) => {
                 }
             })
     } catch (error) {
-        ctx.status = 500
-        ctx.body = 'Opps, Something Error :' + error
+        $util.sendFailure(ctx, null, 'Opps, Something Error :' + error)
     }
 }
 
@@ -62,8 +61,7 @@ const addNiceLinks = async(ctx, next) => {
             })
         })
     } catch (error) {
-        ctx.status = 500
-        ctx.body = 'Opps, Something Error :' + error
+        $util.sendFailure(ctx, null, 'Opps, Something Error :' + error)
     }
 }
 
@@ -106,10 +104,7 @@ const dispatchAction = async(ctx, next) => {
         })
     } catch (error) {
         console.log('Something has gone wrong, Error messages are as follows: '.red)
-        ctx.body = {
-            sussess: false,
-            messages: 'Opps, Something Error :' + error
-        }
+        $util.sendFailure(ctx, null, 'Opps, Something Error :' + error)
     }
 }
 
