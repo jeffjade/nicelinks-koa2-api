@@ -9,9 +9,9 @@ const jwt = require('jsonwebtoken'),
 // Middleware to require login/auth
 const requireAuth = passport.authenticate('jwt', { session: false })
 
-function generateToken(user) {
-    return jwt.sign(user, config.secret, {
-        expiresIn: 10080 // in seconds
+function generateToken(info) {
+    return jwt.sign(info, config.secret, {
+        expiresIn: 80 // in seconds
     })
 }
 
@@ -70,7 +70,7 @@ const setTokenAndSendMail = async (user, ctx) => {
                 resolve()
             })
         })
-        $util.sendSuccess(ctx, `已发送邮件至 ${user.email} 请在24小时内按照邮件提示激活。`)
+        $util.sendSuccess(ctx, null, `已发送邮件至 ${user.email} 请在24小时内按照邮件提示激活。`)
     } catch (err) {
         throw err
     }
@@ -209,23 +209,29 @@ exports.active = async(ctx, next) => {
 exports.requestResetPwd = async(ctx, next) => {
     const requestBody = ctx.request.body
     let user = await UserModel.findOne({
-        email: requestBody.email
-    }).exec()
+            email: requestBody.email
+        }).exec()
 
     if (!user) {
-        ctx.status = 426
-        ctx.body = {
-            success: false,
-            message: "The corresponding account for this mailbox has not been found. Please check it."
-        }
+        $util.sendFailure(ctx, 'accountNotRegistered')
         return
     }
 
-    user.resetPasswordToken = generateToken(user)
-    user.resetPasswordExpires = Date.now() + 24 * 3600 * 1000
-    let link = `${config.clientPath}/reset-pwd?resetPasswordToken=` + user.resetPasswordToken
-
-    sendMail({ to: user.email, type: 'reset', link: link })
+    if (!requestBody.resetPasswordToken) {
+        user.resetPasswordToken = generateToken({
+            id: user._id
+        })
+        user.resetPasswordExpires = Date.now() + 24 * 3600 * 1000
+        console.log(user.resetPasswordToken)
+        let link = `${config.clientPath}/reset-pwd?resetPasswordToken=` + user.resetPasswordToken
+        sendMail({ to: user.email, type: 'reset', link: link })
+    } else {
+        if (requestBody.resetPasswordToken === user.resetPasswordToken) {
+            user.password = requestBody.password
+        } else {
+            return $util.sendFailure(ctx, null, 'Token 验证失败')
+        }
+    }
 
     try {
         await new Promise((resolve, reject) => {
@@ -234,11 +240,7 @@ exports.requestResetPwd = async(ctx, next) => {
                 resolve()
             })
         })
-        ctx.status = 200
-        ctx.body = {
-            success: true,
-            message: `已发送邮件至 ${user.email} 请在 24 小时内按照邮件提示，进行重设密码。`
-        }
+        $util.sendSuccess(ctx, null, `已发送邮件至 ${user.email} 请在24小时内按照邮件提示激活。`)
     } catch (err) {
         throw err
     }
