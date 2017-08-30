@@ -8,7 +8,8 @@
 
 let http = require('http')
 let cheerio = require('cheerio')
-let msgConfig = require('./msgConfig.js')
+let errorMsgConfig = require('./errorMsgConf.js')
+let successMsgConfig = require('./successMsgConf.js')
 
 Date.prototype.Format = function (fmt) {
   var o = {
@@ -38,10 +39,20 @@ module.exports = {
         }
     },
 
+    sendSuccessWithMsg (ctx, signStr, extraParam) {
+        let msgVal = successMsgConfig[signStr]['zh']
+        msgVal = extraParam ? msgVal.replace('@#', extraParam) : msgVal
+        ctx.status = 200
+        ctx.body = {
+            success: true,
+            value: msgVal
+        }
+    },
+
     sendFailure(ctx, signStr, errMsg) {
         ctx.body = {
             success: false,
-            message: signStr ? msgConfig[signStr]['zh'] : errMsg
+            message: signStr ? errorMsgConfig[signStr]['zh'] : errMsg
         }
     },
 

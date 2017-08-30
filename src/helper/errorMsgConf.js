@@ -14,5 +14,13 @@ module.exports = {
   nameHadRegistered: {
     zh: '该名称已被注册。',
     en: 'The name has been registered.'
+  },
+  activeValidationFailed: {
+    zh: `验证失败，验证链接无效或已经过期，请重新 <a href='/login'>注册</a>。`,
+    en: `Validation failed. The validation link is invalid or has expired. Please <a href='/login'>re register</a>`
+  },
+  tokenValidationFailed: {
+    zh: 'Token 验证失败，或已过期',
+    en: 'Token Validation Failed，Or expired'
   }
 }

@@ -186,9 +186,7 @@ exports.active = async(ctx, next) => {
 
     // 激活码无效
     if (!user) {
-        ctx.status = 425
-        ctx.body = "验证失败，验证链接无效或已经过期，请重新 <a href='/login'>注册</a>。"
-        return
+        return $util.sendFailure(ctx, 'activeValidationFailed')
     }
 
     // 激活并保存
@@ -208,28 +206,24 @@ exports.active = async(ctx, next) => {
 
 exports.requestResetPwd = async(ctx, next) => {
     const requestBody = ctx.request.body
-    let user = await UserModel.findOne({
-            email: requestBody.email
-        }).exec()
-
+    let user = await UserModel.findOne({email: requestBody.email}).exec()
     if (!user) {
-        $util.sendFailure(ctx, 'accountNotRegistered')
-        return
+        return $util.sendFailure(ctx, 'accountNotRegistered')
     }
 
+    let successContent = 'sendEmailSuccess'
     if (!requestBody.resetPasswordToken) {
-        user.resetPasswordToken = generateToken({
-            id: user._id
-        })
+        let buf = crypto.randomBytes(20)
+        user.resetPasswordToken = user._id + buf.toString('hex')
         user.resetPasswordExpires = Date.now() + 24 * 3600 * 1000
-        console.log(user.resetPasswordToken)
-        let link = `${config.clientPath}/reset-pwd?resetPasswordToken=` + user.resetPasswordToken
+        let link = `${config.clientPath}/reset-pwd?email=${user.email}&resetPasswordToken=${user.resetPasswordToken}`
         sendMail({ to: user.email, type: 'reset', link: link })
     } else {
         if (requestBody.resetPasswordToken === user.resetPasswordToken) {
             user.password = requestBody.password
+            successContent = `resetPwdSuccess`
         } else {
-            return $util.sendFailure(ctx, null, 'Token 验证失败')
+            return $util.sendFailure(ctx, 'tokenValidationFailed')
         }
     }
 
@@ -240,7 +234,7 @@ exports.requestResetPwd = async(ctx, next) => {
                 resolve()
             })
         })
-        $util.sendSuccess(ctx, null, `已发送邮件至 ${user.email} 请在24小时内按照邮件提示激活。`)
+        return $util.sendSuccess(ctx, successContent, user.email)
     } catch (err) {
         throw err
     }
@@ -250,11 +244,7 @@ exports.setProfile = async(ctx, next) => {
     const requestBody = ctx.request.body
     let user = await findUser({ _id: requestBody._id })
     if (!user) {
-        ctx.status = 427
-        ctx.body = {
-            success: false,
-            message: `没找见对用的账户。`
-        }
+        return $util.sendFailure(ctx, 'accountNotRegistered')
     } else {
         let profileList = requestBody.profile
         for (let key in profileList) {
@@ -275,13 +265,9 @@ exports.getProfile = async (ctx, next) => {
     const requestBody = ctx.request.query
     let user = await findUser({ _id: requestBody._id })
     if (!user) {
-        ctx.status = 427
-        ctx.body = {
-            success: false,
-            message: `没找见对用的账户。`
-        }
+        return $util.sendFailure(ctx, 'accountNotRegistered')
     } else {
-        $util.sendSuccess(ctx, {
+        return $util.sendSuccess(ctx, {
             username: user.username,
             profile: user.profile,
             email: user.email,
