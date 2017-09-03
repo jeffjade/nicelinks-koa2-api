@@ -31,17 +31,22 @@ const LinksSchema = new mongoose.Schema({
         type: String,
         default: ''
     },
-    tags: {
+    classify: {
         type: String,
         required: true
     },
-    classify: {
+    theme: {
         type: String,
         required: true
     },
     likes: {
         type: Number,
         default: 0
+    },
+    tags: {
+        type: Array,
+        default: [],
+        required: true
     },
     dislikes: {
         type: Number,
@@ -54,10 +59,6 @@ const LinksSchema = new mongoose.Schema({
     isDislikes: {
         type: Boolean,
         default: false
-    },
-    social: {
-        type: Object,
-        default: {}
     },
     created: {
         type: Date,

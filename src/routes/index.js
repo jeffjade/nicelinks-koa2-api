@@ -34,6 +34,8 @@ router.get('/index', async (ctx, next) => {
 
 router.get('/getNiceLinks', linksCtrl.getNiceLinks)
 
+router.get('/getLinksByTag', linksCtrl.getLinksByTag)
+
 router.post('/addNiceLinks', linksCtrl.addNiceLinks)
 
 router.post('/dispatchAction', linksCtrl.dispatchAction)

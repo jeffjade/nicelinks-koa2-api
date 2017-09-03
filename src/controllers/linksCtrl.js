@@ -49,6 +49,35 @@ const getNiceLinks = async(ctx, next) => {
     }
 }
 
+const getLinksByTag = async(ctx, next) => {
+    let options = ctx.request.query
+    console.log(options)
+    let sortParam = {}
+    options.sortTarget ? sortParam[options.sortTarget] = options.sortType : ''
+    let limitNumber = parseInt(options.pageSize)
+    let skipNumber = (parseInt(options.pageCount) - 1) * limitNumber
+    try {
+        return await Links.find({'tags':  options.tags})
+            .sort(sortParam)
+            .limit(limitNumber)
+            .skip(skipNumber)
+            .exec().then(async(result) => {
+                if (options.userId) {
+                    let idArr = result.map(item => {
+                        return item._id
+                    })
+                    await Actions.find({ link_id: { $in: idArr } }).then(actionResult => {
+                        $util.sendSuccess(ctx, assemblyResultWithAction(_.cloneDeep(result), actionResult, options.userId))
+                    })
+                } else {
+                    $util.sendSuccess(ctx, result)
+                }
+            })
+    } catch (error) {
+        $util.sendFailure(ctx, null, 'Opps, Something Error :' + error)
+    }
+}
+
 const addNiceLinks = async(ctx, next) => {
     let options = ctx.request.body
     try {
@@ -122,6 +151,7 @@ const getMyPublish = async(ctx, next) => {
 
 module.exports = {
     getNiceLinks,
+    getLinksByTag,
     addNiceLinks,
     dispatchAction,
     getMyPublish
