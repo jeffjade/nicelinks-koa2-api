@@ -60,6 +60,10 @@ const LinksSchema = new mongoose.Schema({
         type: Boolean,
         default: false
     },
+    active: {
+        type: Boolean,
+        default: false,
+    },
     created: {
         type: Date,
         default: Date.now

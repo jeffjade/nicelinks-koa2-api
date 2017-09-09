@@ -18,7 +18,8 @@ const assemblyResultWithAction = (source, target, key) => {
 
 const getNiceLinks = async(ctx, next) => {
     let options = $util.getQueryObject(ctx.request.url)
-    let params = {}
+    // 默认只拉去已经审核通过的链接;
+    let params = {active: true}
     let sortParam = {}
 
     options.classify ? params.classify = options.classify : ''
@@ -80,6 +81,9 @@ const getLinksByTag = async(ctx, next) => {
 
 const addNiceLinks = async(ctx, next) => {
     let options = ctx.request.body
+    if (options.role === 'Admin') {
+        options.active = await $util.checkRoleByUserId(options.userId, 'Admin')
+    }
     try {
         return await Links.create(options).then(async(result) => {
             let params = {

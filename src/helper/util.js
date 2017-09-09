@@ -10,6 +10,7 @@ let http = require('http')
 let cheerio = require('cheerio')
 let errorMsgConfig = require('./errorMsgConf.js')
 let successMsgConfig = require('./successMsgConf.js')
+let { UserModel } = require('./../models/index')
 
 Date.prototype.Format = function (fmt) {
   var o = {
@@ -54,6 +55,22 @@ module.exports = {
             success: false,
             message: signStr ? errorMsgConfig[signStr]['zh'] : errMsg
         }
+    },
+
+    // Role authorization check
+    checkRoleByUserId (userId, role) {
+        return new Promise((resolve, reject) => {
+            UserModel.findOne({ _id: userId}, (err, foundUser) => {
+                if (err) {
+                    reject(err)
+                }
+                if (foundUser.role === role) {
+                    resolve(true)
+                } else {
+                    resolve(true)
+                }
+            })
+        })
     },
 
     query(search) {
