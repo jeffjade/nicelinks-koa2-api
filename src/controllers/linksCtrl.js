@@ -97,6 +97,37 @@ const addNiceLinks = async(ctx, next) => {
     }
 }
 
+const updateNiceLinks = async(ctx, next) => {
+    let options = ctx.request.body
+    if (options.role === 'Admin') {
+        options.active = await $util.checkRoleByUserId(options.userId, 'Admin')
+    } else {
+        return $util.sendFailure(ctx, null, 'Opps, You do not have permission to control')
+    }
+    try {
+        return await Links.update({ '_id': options._id }, { $set: options }).then(async(result) => {
+            $util.sendSuccess(ctx, result)
+        })
+    } catch (error) {
+        $util.sendFailure(ctx, null, 'Opps, Something Error :' + error)
+    }
+}
+
+const deleteNiceLinks = async(ctx, next) => {
+    let options = ctx.request.body
+    let isAdmin = await $util.checkRoleByUserId(options.operatorId, 'Admin')
+    if (!isAdmin) {
+        return $util.sendFailure(ctx, null, 'Opps, You do not have permission to control')
+    }
+    try {
+        return await Links.remove({ '_id': options._id }).then(async(result) => {
+            $util.sendSuccess(ctx, result)
+        })
+    } catch (error) {
+        $util.sendFailure(ctx, null, 'Opps, Something Error :' + error)
+    }
+}
+
 const dispatchAction = async(ctx, next) => {
     let options = ctx.request.body
     if (!$util.verifyUserIdEffective(options.userId)) {
@@ -166,11 +197,36 @@ const getAllTags = async(ctx, next) => {
     }
 }
 
+const getAllLinks = async(ctx, next) => {
+    let options = ctx.request.query
+    // 默认只拉去已经审核通过的链接;
+    let params = {active: options.active}
+    let sortParam = {}
+    options.sortTarget ? sortParam[options.sortTarget] = options.sortType : ''
+
+    let limitNumber = parseInt(options.pageSize)
+    let skipNumber = (parseInt(options.pageCount) - 1) * limitNumber
+    try {
+        return await Links.find(params)
+            .sort(sortParam)
+            .limit(limitNumber)
+            .skip(skipNumber)
+            .exec().then(async(result) => {
+                $util.sendSuccess(ctx, result)
+            })
+    } catch (error) {
+        $util.sendFailure(ctx, null, 'Opps, Something Error :' + error)
+    }
+}
+
 module.exports = {
     getNiceLinks,
     getLinksByTag,
     getAllTags,
+    getAllLinks,
     addNiceLinks,
+    updateNiceLinks,
+    deleteNiceLinks,
     dispatchAction,
     getMyPublish
 }

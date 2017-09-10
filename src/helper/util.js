@@ -60,16 +60,20 @@ module.exports = {
     // Role authorization check
     checkRoleByUserId (userId, role) {
         return new Promise((resolve, reject) => {
-            UserModel.findOne({ _id: userId}, (err, foundUser) => {
-                if (err) {
-                    reject(err)
-                }
-                if (foundUser.role === role) {
-                    resolve(true)
-                } else {
-                    resolve(true)
-                }
-            })
+            try {
+                UserModel.findOne({ _id: userId}, (err, foundUser) => {
+                    if (err) {
+                        return reject(err)
+                    }
+                    if (foundUser.role === role) {
+                        return resolve(true)
+                    } else {
+                        return resolve(false)
+                    }
+                })
+            }  catch (error) {
+                return $util.sendFailure(ctx, null, 'Opps, Something Error :' + error)
+            }
         })
     },
 

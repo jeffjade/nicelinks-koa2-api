@@ -38,11 +38,17 @@ router.get('/getLinksByTag', LinksCtrl.getLinksByTag)
 
 router.post('/addNiceLinks', LinksCtrl.addNiceLinks)
 
+router.post('/updateNiceLinks', LinksCtrl.updateNiceLinks)
+
+router.post('/deleteNiceLinks', LinksCtrl.deleteNiceLinks)
+
 router.post('/dispatchAction', LinksCtrl.dispatchAction)
 
 router.get('/getMyPublish', LinksCtrl.getMyPublish)
 
 router.get('/getAllTags', LinksCtrl.getAllTags)
+
+router.get('/getAllLinks', LinksCtrl.getAllLinks)
 // *********************Login Auth Register********************** Strat//
 
 // Registration route
