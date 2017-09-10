@@ -1,5 +1,5 @@
 let Router = require('koa-router')
-let linksCtrl = require('../controllers/linksCtrl')
+let LinksCtrl = require('../controllers/linksCtrl')
 let AuthController = require('../controllers/authCtrl')
 let HelpController = require('../controllers/helpCtrl')
 let fs = require("fs")
@@ -32,16 +32,17 @@ router.get('/index', async (ctx, next) => {
   ctx.body = content
 })
 
-router.get('/getNiceLinks', linksCtrl.getNiceLinks)
+router.get('/getNiceLinks', LinksCtrl.getNiceLinks)
 
-router.get('/getLinksByTag', linksCtrl.getLinksByTag)
+router.get('/getLinksByTag', LinksCtrl.getLinksByTag)
 
-router.post('/addNiceLinks', linksCtrl.addNiceLinks)
+router.post('/addNiceLinks', LinksCtrl.addNiceLinks)
 
-router.post('/dispatchAction', linksCtrl.dispatchAction)
+router.post('/dispatchAction', LinksCtrl.dispatchAction)
 
-router.get('/getMyPublish', linksCtrl.getMyPublish)
+router.get('/getMyPublish', LinksCtrl.getMyPublish)
 
+router.get('/getAllTags', LinksCtrl.getAllTags)
 // *********************Login Auth Register********************** Strat//
 
 // Registration route

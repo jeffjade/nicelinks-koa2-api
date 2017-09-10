@@ -52,7 +52,6 @@ const getNiceLinks = async(ctx, next) => {
 
 const getLinksByTag = async(ctx, next) => {
     let options = ctx.request.query
-    console.log(options)
     let sortParam = {}
     options.sortTarget ? sortParam[options.sortTarget] = options.sortType : ''
     let limitNumber = parseInt(options.pageSize)
@@ -148,14 +147,29 @@ const getMyPublish = async(ctx, next) => {
             $util.sendSuccess(ctx, result)
         })
     } catch (error) {
-        ctx.status = 500
-        ctx.body = 'Opps, Something Error :' + error
+        $util.sendFailure(ctx, null, 'Opps, Something Error :' + error)
+    }
+}
+
+const getAllTags = async(ctx, next) => {
+    try {
+        return await Links.find({}).limit(1000).exec().then(async(result) => {
+            let allTagsArr = []
+            result.map(item => {
+                allTagsArr = allTagsArr.concat(item.tags)
+            })
+            allTagsArr = [...new Set(allTagsArr)]
+            $util.sendSuccess(ctx, allTagsArr)
+        })
+    } catch (error) {
+        $util.sendFailure(ctx, null, 'Opps, Something Error :' + error)
     }
 }
 
 module.exports = {
     getNiceLinks,
     getLinksByTag,
+    getAllTags,
     addNiceLinks,
     dispatchAction,
     getMyPublish
