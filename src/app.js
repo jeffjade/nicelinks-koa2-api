@@ -1,4 +1,5 @@
 let http = require('http')
+let fs = require('fs')
 let Koa = require('koa')
 let path = require('path')
 let views = require('koa-views')
@@ -8,13 +9,14 @@ let Bodyparser = require('koa-bodyparser')
 let koaStatic = require('koa-static-plus')
 let koaOnError = require('koa-onerror')
 let KoaHelmet = require('koa-helmet')
-let session = require('koa-session2')
+let KoaSession = require('koa-session2')
 let KoaStatic = require('koa-static')
 let KoaMount = require('koa-mount')
+let KoaRedisCache = require('koa-redis-cache')
+let KoaRedis = require('koa-redis')
 let cors = require('koa2-cors')
 let config = require('./config')
 let logger = require('./helper/logger')
-let fs = require('fs')
 
 const app = new Koa()
 const bodyparser = Bodyparser()
@@ -27,13 +29,29 @@ app.use(cors({
     allowHeaders: ['Content-Type', 'Authorization', 'Accept']
 }))
 
+// koa层面 api返回 基于redis缓存
+app.use(KoaRedisCache({
+  redis: configs.redis.session,
+  routes: [{
+      path: '/api/*',
+      expire: 60
+    }]
+}))
+
 // middlewares
 app.use(convert(bodyparser))
 app.use(convert(json()))
 app.use(KoaHelmet())
 
 app.proxy = true
-app.use(session({ key: 'SESSIONID' }))
+app.use(KoaSession({
+    store: new KoaRedis(configs.redis.session),
+    key: 'SESSIONID',
+    maxAge: 86400000,
+    overwrite: true,
+    httpOnly: true,
+    signed: true
+}))
 app.use(config.passport.initialize())
 app.use(config.passport.session())
 
