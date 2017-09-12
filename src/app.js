@@ -31,7 +31,7 @@ app.use(cors({
 
 // koa层面 api返回 基于redis缓存
 app.use(KoaRedisCache({
-  redis: configs.redis.session,
+  redis: config.redis.session,
   routes: [{
       path: '/api/*',
       expire: 60
@@ -45,7 +45,7 @@ app.use(KoaHelmet())
 
 app.proxy = true
 app.use(KoaSession({
-    store: new KoaRedis(configs.redis.session),
+    store: new KoaRedis(config.redis.session),
     key: 'SESSIONID',
     maxAge: 86400000,
     overwrite: true,
