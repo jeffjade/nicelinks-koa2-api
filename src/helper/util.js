@@ -6,7 +6,7 @@
       (new Date()).Format("YYYY-M-D h:m:s.S")      ==> 2006-7-2 8:9:4.18
 */
 
-let http = require('http')
+let axios = require('axios')
 let cheerio = require('cheerio')
 let errorMsgConfig = require('./errorMsgConf.js')
 let successMsgConfig = require('./successMsgConf.js')
@@ -130,28 +130,29 @@ module.exports = {
     },
 
     crawlWebPageByUrl (url, callback) {
-        http.get(url, function (res) {
-            let data = ''
+        // http.get(url, function (res) {
+        //     let data = ''
 
-            res.on('data', function (chunk) {
-                data += chunk
-            })
+        //     res.on('data', function (chunk) {
+        //         data += chunk
+        //     })
 
-            res.on('end', function () {
-                callback(null, data)
-            })
-        }).on('error', function (err) {
-            console.log("Opps, Download Error Occurred !" + err)
-            callback(err)
-        })
+        //     res.on('end', function () {
+        //         callback(null, data)
+        //     })
+        // }).on('error', function (err) {
+        //     console.log("Opps, Download Error Occurred !" + err)
+        //     callback(err)
+        // })
     },
 
     getWebPageInfo (url) {
         return new Promise((resolve, reject) => {
-            this.crawlWebPageByUrl(url, (err, body) => {
+            return axios.get(url).then((res) => {
                 try {
-                    let $ = cheerio.load(body)
-                    if (err) { reject({}) }
+                    console.log(typeof res.data)
+                    console.log(res.data)
+                    let $ = cheerio.load(res.data)
                     let description = $('meta[name="description"]').attr('content')
                     let result = {
                         title: $("title").text() || $('meta[og:title"]').attr('content'),
@@ -159,9 +160,12 @@ module.exports = {
                     }
                     resolve(result)
                 } catch (err) {
-                    console.log(err)
+                    console.log("Opps, Download Error Occurred !" + err)
                     resolve({})
                 }
+            }).catch(err => {
+                console.log("Opps, Axios Error Occurred !" + err)
+                resolve({})
             })
         })
     }
