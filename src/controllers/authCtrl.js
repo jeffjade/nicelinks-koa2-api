@@ -15,11 +15,6 @@ function generateToken(info) {
     })
 }
 
-function sendResponse(ctx, status, body) {
-    ctx.status = status
-    ctx.body = body
-}
-
 const findUser = (params) => {
     return new Promise((resolve, reject) => {
         UserModel.findOne(params, (err, doc) => {
@@ -70,7 +65,7 @@ const setTokenAndSendMail = async (user, ctx) => {
                 resolve()
             })
         })
-        $util.sendSuccess(ctx, null, `已发送邮件至 ${user.email} 请在24小时内按照邮件提示激活。`)
+        $util.sendSuccess(ctx, null, `已发送邮件至 ${user.email}, 请在24小时内按照邮件提示激活。`)
     } catch (err) {
         throw err
     }
@@ -82,11 +77,11 @@ const setTokenAndSendMail = async (user, ctx) => {
 exports.checkIsExisted = async(ctx, next) => {
     const requestBody = ctx.request.body
     const username = requestBody.username
-    const doc = await findUser({ username: username })
-    if (doc) {
+    const foundUser = await findUser({ username: username })
+    if (foundUser) {
         return $util.sendFailure(ctx, 'nameHadRegistered')
     } else {
-        $util.sendSuccess(ctx, true)
+        return $util.sendSuccess(ctx, true)
     }
 }
 
@@ -97,15 +92,16 @@ exports.login = (ctx, next) => {
                 return $util.sendFailure(ctx, 'accountNoActive')
             }
             ctx.cookies.set('NiceLinksLoginCookie', true, {
-                maxAge: 30 * 60 * 1000,
+                maxAge: 1800000,
                 httpOnly: false
             })
-            $util.sendSuccess(ctx, {
+
+            return $util.sendSuccess(ctx, {
                 role: user.role,
                 _id: user._id,
                 username: user.username
             })
-            return ctx.login(user)
+            // return ctx.login(user)
         } else {
             $util.sendFailure(ctx, 'wrongAccountOrPwd')
         }
@@ -139,28 +135,25 @@ exports.signup = async(ctx, next) => {
     const password = requestBody.password
 
     // Return error if no email provided
-    if (!email) {
-        return sendResponse(ctx, 420, 'You must enter an email address.')
-    }
+    if (!email) { return $util.sendFailure(ctx, 'noUsername') }
 
-    if (!username) {
-        return sendResponse(ctx, 420, 'You must enter an username.')
-    }
+    if (!username) { return $util.sendFailure(ctx, 'noUsername') }
 
     // Return error if no password provided
-    if (!password) {
-        return sendResponse(ctx, 421, 'You must enter a password.')
-    }
-    const user = await findUser({ email: email })
+    if (!password) { return $util.sendFailure(ctx, 'noPassword') }
 
+    const user = await findUser({ email: email })
     if (user) {
         // 如果已经注册但未激活，重新发送激活信息
         if (!user.active) {
+            if (new Date(user.activeExpires) >  new Date()) {
+                return $util.sendFailure(ctx, 'pleaseActiveMailbox')
+            }
             user.username = username
             user.password = password
             return setTokenAndSendMail(user, ctx)
         } else {
-            return sendResponse(ctx, 422, 'The mailbox you filled in has been registered.')
+            return $util.sendFailure(ctx, 'mailboxHadRegistered')
         }
     } else {
         let user = new UserModel({
@@ -169,7 +162,7 @@ exports.signup = async(ctx, next) => {
             password: password,
             profile: {}
         })
-        return setTokenAndSendMail(user)
+        return setTokenAndSendMail(user, ctx)
     }
 }
 

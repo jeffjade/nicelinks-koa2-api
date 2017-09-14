@@ -2,11 +2,17 @@ let Router = require('koa-router')
 let LinksCtrl = require('../controllers/linksCtrl')
 let AuthController = require('../controllers/authCtrl')
 let HelpController = require('../controllers/helpCtrl')
+let $util = require('../helper/util')
 let fs = require("fs")
 let {join} = require("path")
 
 const router = Router({
     prefix: '/api'
+})
+
+router.use(async (ctx, next) => {
+  $util.sanitize(ctx.query)
+  await next()
 })
 
 // api cors

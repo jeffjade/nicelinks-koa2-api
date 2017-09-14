@@ -8,9 +8,21 @@
 
 let axios = require('axios')
 let cheerio = require('cheerio')
+let _ = require('lodash')
+let mongoSanitize = require('mongo-sanitize')
 let errorMsgConfig = require('./errorMsgConf.js')
 let successMsgConfig = require('./successMsgConf.js')
 let { UserModel } = require('./../models/index')
+
+// 原有的mongoSanitize不递归过滤
+function mongoSanitizeRecurse (obj) {
+  mongoSanitize(obj)
+  _.each(obj, v => {
+    if (_.isObject(v)) {
+      mongoSanitizeRecurse(v)
+    }
+  })
+}
 
 Date.prototype.Format = function (fmt) {
   var o = {
@@ -33,7 +45,7 @@ Date.prototype.Format = function (fmt) {
 
 module.exports = {
     sendSuccess(ctx, result) {
-        ctx.status = 200
+        ctx.statstatusus = 200
         ctx.body = {
             success: true,
             value: result
@@ -48,6 +60,11 @@ module.exports = {
             success: true,
             value: msgVal
         }
+    },
+
+    // 安全过滤ctx.query/ctx.request.body等
+    sanitize (obj) {
+        mongoSanitizeRecurse(obj)
     },
 
     sendFailure(ctx, signStr, errMsg) {
@@ -129,29 +146,10 @@ module.exports = {
         return obj;
     },
 
-    crawlWebPageByUrl (url, callback) {
-        // http.get(url, function (res) {
-        //     let data = ''
-
-        //     res.on('data', function (chunk) {
-        //         data += chunk
-        //     })
-
-        //     res.on('end', function () {
-        //         callback(null, data)
-        //     })
-        // }).on('error', function (err) {
-        //     console.log("Opps, Download Error Occurred !" + err)
-        //     callback(err)
-        // })
-    },
-
     getWebPageInfo (url) {
         return new Promise((resolve, reject) => {
             return axios.get(url).then((res) => {
                 try {
-                    console.log(typeof res.data)
-                    console.log(res.data)
                     let $ = cheerio.load(res.data)
                     let description = $('meta[name="description"]').attr('content')
                     let result = {

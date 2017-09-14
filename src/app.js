@@ -29,12 +29,30 @@ app.use(cors({
     allowHeaders: ['Content-Type', 'Authorization', 'Accept']
 }))
 
+// var redis   = require('redis')
+// var client  = redis.createClient(config.redis.session.port, config.redis.session.host)
+// client.on("error", function(error) {
+//     console.log(error)
+// })
+// client.on("connect", () => {
+//     console.log('connect success !')
+// })
+
+// 替换'x-koa-redis-cache' 为'x-server-cache' 同helmet信息隐藏
+app.use(async (ctx, next) => {
+  await next()
+  if (ctx.response.get('x-koa-redis-cache')) {
+    ctx.remove('x-koa-redis-cache')
+    ctx.set('x-server-cache', true)
+  }
+})
+
 // koa层面 api返回 基于redis缓存
 app.use(KoaRedisCache({
-  redis: config.redis.session,
-  routes: [{
-      path: '/api/*',
-      expire: 60
+    redis: config.redis.session,
+    routes: [{
+        path: '/api/',
+        expire: 60
     }]
 }))
 

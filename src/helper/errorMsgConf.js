@@ -22,5 +22,25 @@ module.exports = {
   tokenValidationFailed: {
     zh: 'Token 验证失败，或已过期',
     en: 'Token Validation Failed，Or expired'
+  },
+  mailboxHadRegistered: {
+    zh: '您填写的邮箱已经注册了。',
+    en: 'The mailbox you filled in has been registered.'
+  },
+  pleaseActiveMailbox: {
+    zh: '您填写的邮箱已经注册了，请激活。',
+    en: 'The mailbox you filled in has been registered，Please activate it.'
+  },
+  noPassword: {
+    zh: '您必须输入密码。',
+    en: 'You must enter a password.'
+  },
+  noUsername: {
+    zh: '您必须输入用户名。',
+    en: 'You must enter an username.'
+  },
+  noMailbox: {
+    zh: '您必须输入电子邮件地址。',
+    en: 'You must enter an email address.'
   }
 }
