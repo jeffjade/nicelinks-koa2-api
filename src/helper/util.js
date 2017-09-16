@@ -9,10 +9,16 @@
 let axios = require('axios')
 let cheerio = require('cheerio')
 let _ = require('lodash')
+let fs = require('fs')
+let path = require('path')
 let mongoSanitize = require('mongo-sanitize')
+let formidable = require('formidable')
+
 let errorMsgConfig = require('./errorMsgConf.js')
 let successMsgConfig = require('./successMsgConf.js')
 let { UserModel } = require('./../models/index')
+let config = require('./../config')
+
 
 // 原有的mongoSanitize不递归过滤
 function mongoSanitizeRecurse (obj) {
@@ -166,5 +172,36 @@ module.exports = {
                 resolve({})
             })
         })
-    }
+    },
+
+    async saveAvatarAndGetPath (req, imgName){
+		return new Promise((resolve, reject) => {
+			const form = formidable.IncomingForm()
+            form.uploadDir = config.main.avatarUploadDir
+            console.log(form.uploadDir)
+            try {
+                form.parse(req, async (err, fields, files) => {
+                    console.log(err, fields, files)
+                    const fullName = imgName + path.extname(files.file.name)
+                    const repath = config.main.avatarUploadDir + fullName
+                    await fs.rename(files.file.path, repath)
+                    return resolve(fullName)
+                    /*gm(repath)
+                    .resize(200, 200, "!")
+                    .write(repath, async (err) => {
+                        if(err){
+                            console.log('裁切图片失败');
+                            reject('裁切图片失败');
+                            return
+                        }
+                        resolve(fullName)
+                    })*/
+                })
+            } catch(err){
+                console.log('保存图片失败', err)
+                fs.unlink(files.file.path)
+                return reject('保存图片失败')
+            }
+		})
+	}
 }

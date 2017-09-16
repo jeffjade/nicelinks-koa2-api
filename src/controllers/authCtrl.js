@@ -92,7 +92,7 @@ exports.login = (ctx, next) => {
                 return $util.sendFailure(ctx, 'accountNoActive')
             }
             ctx.cookies.set('NiceLinksLoginCookie', true, {
-                maxAge: 1800000,
+                maxAge: 3600000,
                 httpOnly: false
             })
 
@@ -267,5 +267,31 @@ exports.getProfile = async (ctx, next) => {
             role: user.role,
             _id: user._id
         })
+    }
+}
+
+exports.updateAvatar = async(ctx, next) => {
+    const request = ctx.request
+    let user = await findUser({username: request.header.username})
+    if (!user) {
+        return $util.sendFailure(ctx, 'accountNotRegistered')
+    } else {
+        try{
+            const avatarPath =  await $util.saveAvatarAndGetPath(ctx.response.req, request.header.imgname)
+            user.profile.avatar = avatarPath
+            await new Promise((resolve, reject) => {
+                user.save((err) => {
+                    if (err) { reject(err) }
+                    resolve()
+                })
+            })
+            return $util.sendSuccess(ctx, {
+                message: '成功更新头像',
+                path: avatarPath
+            })
+        } catch (err){
+            console.log('上传图片失败', err)
+            return $util.sendFailure(ctx, 'uploadAbatarFail')
+		}
     }
 }

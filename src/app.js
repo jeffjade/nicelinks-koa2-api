@@ -78,8 +78,7 @@ app.use(convert(koaStatic(path.join(__dirname, '../public'), {
     pathPrefix: ''
 })))
 
-// upload avatar
-app.use(KoaMount('/api/upload/avatar', KoaStatic(config.main.avatarUploadDir)))
+app.use(KoaMount('/api/avatar', KoaStatic(config.main.avatarUploadDir)))
 
 // views
 app.use(views(path.join(__dirname, '../views'), {

@@ -79,8 +79,9 @@ router.post('/setProfile', AuthController.setProfile)
 
 router.get('/getProfile', AuthController.getProfile)
 
+router.post('/updateAvatar', AuthController.updateAvatar)
+
 // router.use('/auth', authRoutes.routes())
 
 router.get('/crawlLinksInfo', HelpController.crawlLinksInfo)
-
 module.exports = router

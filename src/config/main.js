@@ -13,7 +13,7 @@ let config = {
   'port': process.env.PORT || 4000,
 
   // Avatar upload path
-  'avatarUploadDir': join(__dirname, 'upload/avatar'),
+  'avatarUploadDir': join(__dirname, './../../upload/avatar/'),
 
   //  Email path
   'clientPath': 'https://nicelinks.site'

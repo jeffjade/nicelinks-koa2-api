@@ -42,5 +42,9 @@ module.exports = {
   noMailbox: {
     zh: '您必须输入电子邮件地址。',
     en: 'You must enter an email address.'
+  },
+  uploadAbatarFail: {
+    zh: '上传图片失败',
+    en: 'Uploading pictures failed.'
   }
 }
