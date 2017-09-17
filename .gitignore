@@ -45,3 +45,5 @@ app
 !src/config/default.js.idea
 
 src/config/secret.js
+
+upload
