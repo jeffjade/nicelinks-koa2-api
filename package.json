@@ -11,7 +11,7 @@
     "compile": "babel src/ --out-dir app/ --retain-lines --source-maps",
     "clean": "rm -rf app/",
     "test": "mocha -u bdd --compilers js:babel-core/register",
-    "commit": "git add . && git commit -m 'feat(static): update static' && git pull && git push",
+    "commit": "git add . && git commit -m 'feat(static): update static' && git push",
     "deploy": "git pull && npm run clean && npm run compile && cross-env NODE_ENV=production pm2 restart app/index.js --name 'nicelinks-koa2-api'"
   },
   "engines": {
