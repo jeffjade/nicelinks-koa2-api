@@ -99,7 +99,8 @@ exports.login = (ctx, next) => {
             return $util.sendSuccess(ctx, {
                 role: user.role,
                 _id: user._id,
-                username: user.username
+                username: user.username,
+                profile: user.profile
             })
             // return ctx.login(user)
         } else {

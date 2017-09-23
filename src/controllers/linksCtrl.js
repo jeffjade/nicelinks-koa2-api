@@ -2,19 +2,32 @@ let { Links, Actions } = require('./../models/index')
 let $util = require('./../helper/util')
 let _ = require('lodash')
 
-const assemblyResultWithAction = (source, target, key) => {
-    let result = source.map(item => {
-        for (let i in target) {
-            let tItem = target[i]
-            if ((item._id).toString() === (tItem.link_id).toString()) {
-                item.isLikes = tItem.likes_list && !!tItem.likes_list[key] || false
-                item.isDislikes = tItem.dislikes_list && !!tItem.dislikes_list[key] || false
-            }
-        }
-        return item
-    })
-    return result
+const getActionListByLinkId = (actionList, linkId) => {
+    // only one result for action-list with  LinkID(So, Get 0)
+    return actionList.filter(item => {
+        return item.link_id.toString() === linkId
+    })[0]
 }
+
+const assemblyResultWithAction = (source, target, key) => {
+    for (let item of source) {
+        let aItem = getActionListByLinkId(target, item._id.toString())
+        item.isLikes = aItem.likes_list && aItem.likes_list[key] || false
+        item.isDislikes = aItem.dislikes_list && aItem.dislikes_list[key] ||false
+    }
+    return source
+}
+
+const getAllActiveLinks = (params = {}) => {
+    return new Promise((resolve, reject) => {
+        params.active = true
+        Links.find(params).then((result) => {
+            return resolve(result)
+        })
+    })
+}
+
+/*------------------------------api---------------------------*/
 
 const getNiceLinks = async(ctx, next) => {
     let options = $util.getQueryObject(ctx.request.url)
@@ -171,17 +184,6 @@ const dispatchAction = async(ctx, next) => {
     }
 }
 
-const getMyPublish = async(ctx, next) => {
-    let options = ctx.request.query
-    try {
-        return await Links.find({ 'userId': options.userId }).then(result => {
-            $util.sendSuccess(ctx, result)
-        })
-    } catch (error) {
-        $util.sendFailure(ctx, null, 'Opps, Something Error :' + error)
-    }
-}
-
 const getAllTags = async(ctx, next) => {
     try {
         return await Links.find({}).limit(1000).exec().then(async(result) => {
@@ -219,6 +221,60 @@ const getAllLinks = async(ctx, next) => {
     }
 }
 
+const getMyPublish = async(ctx, next) => {
+    let options = ctx.request.query
+    try {
+        return await Links.find({ 'userId': options.userId }).then(async(result) => {
+            let idArr = result.map(item => {
+                return item._id
+            })
+            await Actions.find({ link_id: { $in: idArr } }).then(actionResult => {
+                $util.sendSuccess(ctx, assemblyResultWithAction(_.cloneDeep(result), actionResult, options.userId))
+            })
+        })
+    } catch (error) {
+        $util.sendFailure(ctx, null, 'Opps, Something Error :' + error)
+    }
+}
+
+const getMyLikes = async(ctx, next) => {
+    let options = ctx.request.query
+    try {
+        let allActiveLinks  = await getAllActiveLinks()
+        let idArr = allActiveLinks.map(item => {
+            return item._id
+        })
+        await Actions.find({ link_id: { $in: idArr } }).then(actionResult => {
+            let allLinks = assemblyResultWithAction(_.cloneDeep(allActiveLinks), actionResult, options.userId)
+            let myLikeLinks = allLinks.filter(element => {
+                return !!element.isLikes
+            })
+            return $util.sendSuccess(ctx, myLikeLinks)
+        })
+    } catch (error) {
+        $util.sendFailure(ctx, null, 'Opps, Something Error :' + error)
+    }
+}
+
+const getMyDislikes = async(ctx, next) => {
+    let options = ctx.request.query
+    try {
+        let allActiveLinks  = await getAllActiveLinks()
+        let idArr = allActiveLinks.map(item => {
+            return item._id
+        })
+        await Actions.find({ link_id: { $in: idArr } }).then(actionResult => {
+            let allLinks = assemblyResultWithAction(_.cloneDeep(allActiveLinks), actionResult, options.userId)
+            let myDislikeLinks = allLinks.filter(element => {
+                return !!element.isDislikes
+            })
+            return $util.sendSuccess(ctx, myDislikeLinks)
+        })
+    } catch (error) {
+        $util.sendFailure(ctx, null, 'Opps, Something Error :' + error)
+    }
+}
+
 module.exports = {
     getNiceLinks,
     getLinksByTag,
@@ -228,5 +284,7 @@ module.exports = {
     updateNiceLinks,
     deleteNiceLinks,
     dispatchAction,
-    getMyPublish
+    getMyPublish,
+    getMyLikes,
+    getMyDislikes
 }

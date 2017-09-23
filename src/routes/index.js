@@ -52,6 +52,10 @@ router.post('/dispatchAction', LinksCtrl.dispatchAction)
 
 router.get('/getMyPublish', LinksCtrl.getMyPublish)
 
+router.get('/getMyLikes', LinksCtrl.getMyLikes)
+
+router.get('/getMyDislikes', LinksCtrl.getMyDislikes)
+
 router.get('/getAllTags', LinksCtrl.getAllTags)
 
 router.get('/getAllLinks', LinksCtrl.getAllLinks)
