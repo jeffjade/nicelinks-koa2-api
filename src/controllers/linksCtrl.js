@@ -26,7 +26,6 @@ const getAllActiveLinks = (params = {}) => {
         })
     })
 }
-
 /*------------------------------api---------------------------*/
 
 const getNiceLinks = async(ctx, next) => {
@@ -223,14 +222,14 @@ const getAllLinks = async(ctx, next) => {
 
 const getMyPublish = async(ctx, next) => {
     let options = ctx.request.query
-    let cUserId = await $util.findUserIdByUsername(options.username)
+    let beVisitedUserId = await $util.findUserIdByUsername(options.username)
     try {
-        return await Links.find({ 'userId': cUserId }).then(async(result) => {
+        return await Links.find({ 'userId': beVisitedUserId }).then(async(result) => {
             let idArr = result.map(item => {
                 return item._id
             })
             await Actions.find({ link_id: { $in: idArr } }).then(actionResult => {
-                $util.sendSuccess(ctx, assemblyResultWithAction(_.cloneDeep(result), actionResult, cUserId))
+                $util.sendSuccess(ctx, assemblyResultWithAction(_.cloneDeep(result), actionResult, options.userId))
             })
         })
     } catch (error) {
@@ -240,7 +239,8 @@ const getMyPublish = async(ctx, next) => {
 
 const getMyLikes = async(ctx, next) => {
     let options = ctx.request.query
-    let cUserId = await $util.findUserIdByUsername(options.username)
+    let beVisitedUserId = await $util.findUserIdByUsername(options.username)
+    let isVisitSelf = options.userId && options.userId === beVisitedUserId
 
     try {
         let allActiveLinks  = await getAllActiveLinks()
@@ -248,10 +248,14 @@ const getMyLikes = async(ctx, next) => {
             return item._id
         })
         await Actions.find({ link_id: { $in: idArr } }).then(actionResult => {
-            let allLinks = assemblyResultWithAction(_.cloneDeep(allActiveLinks), actionResult, cUserId)
+            let allLinks = assemblyResultWithAction(_.cloneDeep(allActiveLinks), actionResult, beVisitedUserId)
             let myLikeLinks = allLinks.filter(element => {
                 return !!element.isLikes
             })
+            // 如不是用户访问自己主页，则用自己 id 须再一次对结果检验，以得出用户自己是否对其也点赞了@09-23。
+            if (!isVisitSelf) {
+                myLikeLinks = assemblyResultWithAction(_.cloneDeep(myLikeLinks), actionResult, options.userId)
+            }
             return $util.sendSuccess(ctx, myLikeLinks)
         })
     } catch (error) {
@@ -261,7 +265,8 @@ const getMyLikes = async(ctx, next) => {
 
 const getMyDislikes = async(ctx, next) => {
     let options = ctx.request.query
-    let cUserId = await $util.findUserIdByUsername(options.username)
+    let beVisitedUserId = await $util.findUserIdByUsername(options.username)
+    let isVisitSelf = options.userId && options.userId === beVisitedUserId
 
     try {
         let allActiveLinks  = await getAllActiveLinks()
@@ -269,10 +274,15 @@ const getMyDislikes = async(ctx, next) => {
             return item._id
         })
         await Actions.find({ link_id: { $in: idArr } }).then(actionResult => {
-            let allLinks = assemblyResultWithAction(_.cloneDeep(allActiveLinks), actionResult, cUserId)
+            let allLinks = assemblyResultWithAction(_.cloneDeep(allActiveLinks), actionResult, beVisitedUserId)
             let myDislikeLinks = allLinks.filter(element => {
                 return !!element.isDislikes
             })
+
+            // 如不是用户访问自己主页，则用自己 id 须再一次对结果检验，以得出用户自己是否对其也狂踩了@09-24。
+            if (!isVisitSelf) {
+                myDislikeLinks = assemblyResultWithAction(_.cloneDeep(myDislikeLinks), actionResult, options.userId)
+            }
             return $util.sendSuccess(ctx, myDislikeLinks)
         })
     } catch (error) {

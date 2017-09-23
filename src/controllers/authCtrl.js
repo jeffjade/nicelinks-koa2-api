@@ -15,28 +15,6 @@ function generateToken(info) {
     })
 }
 
-const findUser = (params) => {
-    return new Promise((resolve, reject) => {
-        UserModel.findOne(params, (err, doc) => {
-            if (err) {
-                reject(err)
-            }
-            resolve(doc)
-        })
-    })
-}
-
-const findAllUsers = () => {
-    return new Promise((resolve, reject) => {
-        UserModel.find({}, (err, doc) => {
-            if (err) {
-                reject(err)
-            }
-            resolve(doc)
-        })
-    })
-}
-
 const logoffUserById = (id) => {
     return new Promise((resolve, reject) => {
         UserModel.findOneAndRemove({ _id: id }, err => {
@@ -77,7 +55,7 @@ const setTokenAndSendMail = async (user, ctx) => {
 exports.checkIsExisted = async(ctx, next) => {
     const requestBody = ctx.request.body
     const username = requestBody.username
-    const foundUser = await findUser({ username: username })
+    const foundUser = await $util.findUser({ username: username })
     if (foundUser) {
         return $util.sendFailure(ctx, 'nameHadRegistered')
     } else {
@@ -143,7 +121,7 @@ exports.signup = async(ctx, next) => {
     // Return error if no password provided
     if (!password) { return $util.sendFailure(ctx, 'noPassword') }
 
-    const user = await findUser({ email: email })
+    const user = await $util.findUser({ email: email })
     if (user) {
         // 如果已经注册但未激活，重新发送激活信息
         if (!user.active) {
@@ -236,7 +214,7 @@ exports.requestResetPwd = async(ctx, next) => {
 
 exports.setProfile = async(ctx, next) => {
     const requestBody = ctx.request.body
-    let user = await findUser({ _id: requestBody._id })
+    let user = await $util.findUser({ _id: requestBody._id })
     if (!user) {
         return $util.sendFailure(ctx, 'accountNotRegistered')
     } else {
@@ -257,7 +235,7 @@ exports.setProfile = async(ctx, next) => {
 
 exports.getProfile = async (ctx, next) => {
     const requestBody = ctx.request.query
-    let user = await findUser({ _id: requestBody._id })
+    let user = await $util.findUser({ _id: requestBody._id })
     if (!user) {
         return $util.sendFailure(ctx, 'accountNotRegistered')
     } else {
@@ -273,7 +251,7 @@ exports.getProfile = async (ctx, next) => {
 
 exports.updateAvatar = async(ctx, next) => {
     const request = ctx.request
-    let user = await findUser({username: request.header.username})
+    let user = await $util.findUser({username: request.header.username})
     if (!user) {
         return $util.sendFailure(ctx, 'accountNotRegistered')
     } else {

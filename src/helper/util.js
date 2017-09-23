@@ -80,13 +80,25 @@ module.exports = {
         }
     },
 
-    findUserIdByUsername (username) {
+    // findUser：params === {} 即获得所有用户信息；
+    findUser (params = {}) {
         return new Promise((resolve, reject) => {
-            UserModel.findOne({username: username}, (err, user) => {
+            UserModel.findOne(params, (err, doc) => {
                 if (err) {
                     reject(err)
                 }
-                resolve(user._id)
+                resolve(doc)
+            })
+        })
+    },
+
+    findUserIdByUsername (username) {
+        return new Promise((resolve, reject) => {
+            UserModel.findOne({username: username}, (err, foundUser) => {
+                if (err) {
+                    reject(err)
+                }
+                resolve(foundUser._id)
             })
         })
     },
