@@ -80,6 +80,17 @@ module.exports = {
         }
     },
 
+    findUserIdByUsername (username) {
+        return new Promise((resolve, reject) => {
+            UserModel.findOne({username: username}, (err, user) => {
+                if (err) {
+                    reject(err)
+                }
+                resolve(user._id)
+            })
+        })
+    },
+
     // Role authorization check
     checkRoleByUserId (userId, role) {
         return new Promise((resolve, reject) => {

@@ -223,13 +223,14 @@ const getAllLinks = async(ctx, next) => {
 
 const getMyPublish = async(ctx, next) => {
     let options = ctx.request.query
+    let cUserId = await $util.findUserIdByUsername(options.username)
     try {
-        return await Links.find({ 'userId': options.userId }).then(async(result) => {
+        return await Links.find({ 'userId': cUserId }).then(async(result) => {
             let idArr = result.map(item => {
                 return item._id
             })
             await Actions.find({ link_id: { $in: idArr } }).then(actionResult => {
-                $util.sendSuccess(ctx, assemblyResultWithAction(_.cloneDeep(result), actionResult, options.userId))
+                $util.sendSuccess(ctx, assemblyResultWithAction(_.cloneDeep(result), actionResult, cUserId))
             })
         })
     } catch (error) {
@@ -239,13 +240,15 @@ const getMyPublish = async(ctx, next) => {
 
 const getMyLikes = async(ctx, next) => {
     let options = ctx.request.query
+    let cUserId = await $util.findUserIdByUsername(options.username)
+
     try {
         let allActiveLinks  = await getAllActiveLinks()
         let idArr = allActiveLinks.map(item => {
             return item._id
         })
         await Actions.find({ link_id: { $in: idArr } }).then(actionResult => {
-            let allLinks = assemblyResultWithAction(_.cloneDeep(allActiveLinks), actionResult, options.userId)
+            let allLinks = assemblyResultWithAction(_.cloneDeep(allActiveLinks), actionResult, cUserId)
             let myLikeLinks = allLinks.filter(element => {
                 return !!element.isLikes
             })
@@ -258,13 +261,15 @@ const getMyLikes = async(ctx, next) => {
 
 const getMyDislikes = async(ctx, next) => {
     let options = ctx.request.query
+    let cUserId = await $util.findUserIdByUsername(options.username)
+
     try {
         let allActiveLinks  = await getAllActiveLinks()
         let idArr = allActiveLinks.map(item => {
             return item._id
         })
         await Actions.find({ link_id: { $in: idArr } }).then(actionResult => {
-            let allLinks = assemblyResultWithAction(_.cloneDeep(allActiveLinks), actionResult, options.userId)
+            let allLinks = assemblyResultWithAction(_.cloneDeep(allActiveLinks), actionResult, cUserId)
             let myDislikeLinks = allLinks.filter(element => {
                 return !!element.isDislikes
             })
