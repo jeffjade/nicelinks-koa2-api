@@ -139,6 +139,7 @@ exports.signup = async(ctx, next) => {
             username: username,
             email: email,
             password: password,
+            registeTime: new Date(),
             profile: {}
         })
         return setTokenAndSendMail(user, ctx)
@@ -164,6 +165,7 @@ exports.active = async(ctx, next) => {
     // 激活并保存
     try {
         user.active = true
+        user.activeTime = new Date()
         await new Promise((resolve, reject) => {
             user.save((err) => {
                 if (err) { reject(err) }
@@ -206,7 +208,7 @@ exports.requestResetPwd = async(ctx, next) => {
                 resolve()
             })
         })
-        return $util.sendSuccess(ctx, successContent, user.email)
+        return $util.sendSuccessWithMsg(ctx, successContent, user.email)
     } catch (err) {
         throw err
     }

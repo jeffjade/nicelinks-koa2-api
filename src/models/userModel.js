@@ -32,6 +32,12 @@ const UserSchema = new Schema({
         enum: ['Member', 'Owner', 'Admin'],
         default: 'Member'
     },
+    registeTime: {
+        type: Date
+    },
+    activeTime: {
+        type: Date
+    },
     resetPasswordToken: {
         type: String
     },
