@@ -37,6 +37,7 @@ const getNiceLinks = async(ctx, next) => {
     options.classify ? params.classify = options.classify : ''
     options._id ? params._id = options._id : ''
     options.sortTarget ? sortParam[options.sortTarget] = options.sortType : ''
+    options.theme ? params.theme = options.theme : ''
 
     let limitNumber = parseInt(options.pageSize)
     let skipNumber = (parseInt(options.pageCount) - 1) * limitNumber
