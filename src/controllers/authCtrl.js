@@ -43,7 +43,7 @@ const setTokenAndSendMail = async (user, ctx) => {
                 resolve()
             })
         })
-        $util.sendSuccess(ctx, null, `已发送邮件至 ${user.email}, 请在24小时内按照邮件提示激活。`)
+        $util.sendSuccessWithMsg(ctx, 'sendEmailSuccess', user.email)
     } catch (err) {
         throw err
     }
