@@ -43,7 +43,7 @@ const setTokenAndSendMail = async (user, ctx) => {
                 resolve()
             })
         })
-        $util.sendSuccess(ctx, null, `已发送邮件至 ${user.email}, 请在24小时内按照邮件提示激活。`)
+        $util.sendSuccessWithMsg(ctx, 'sendEmailSuccess', user.email)
     } catch (err) {
         throw err
     }
@@ -156,16 +156,16 @@ exports.active = async(ctx, next) => {
         // 过期时间 > 当前时间
         activeExpires: { $gt: Date.now() }
     }).exec()
-
     // 激活码无效
     if (!user) {
         return $util.sendFailure(ctx, 'activeValidationFailed')
     }
-
     // 激活并保存
     try {
         user.active = true
         user.activeTime = new Date()
+        let activatedNum = await UserModel.findOne({active: true}).count()
+        user.number = activatedNum + 1
         await new Promise((resolve, reject) => {
             user.save((err) => {
                 if (err) { reject(err) }
@@ -246,6 +246,24 @@ exports.getProfile = async (ctx, next) => {
             profile: user.profile,
             email: user.email,
             role: user.role,
+            _id: user._id
+        })
+    }
+}
+
+exports.getUserInfo = async (ctx, next) => {
+    const requestBody = ctx.request.query
+    let user = await $util.findUser({ username: requestBody.username })
+    if (!user) {
+        return $util.sendFailure(ctx, 'accountNotRegistered')
+    } else {
+        console.log(user)
+        return $util.sendSuccess(ctx, {
+            username: user.username,
+            profile: user.profile,
+            number: user.number,
+            activeTime: user.activeTime,
+            createdAt: user.createdAt,
             _id: user._id
         })
     }

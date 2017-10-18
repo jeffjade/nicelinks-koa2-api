@@ -83,6 +83,8 @@ router.post('/setProfile', AuthController.setProfile)
 
 router.get('/getProfile', AuthController.getProfile)
 
+router.get('/getUserInfo', AuthController.getUserInfo)
+
 router.post('/updateAvatar', AuthController.updateAvatar)
 
 // router.use('/auth', authRoutes.routes())

@@ -112,8 +112,8 @@ const addNiceLinks = async(ctx, next) => {
 
 const updateNiceLinks = async(ctx, next) => {
     let options = ctx.request.body
-    if (options.role === 'Admin') {
-        options.active = await $util.checkRoleByUserId(options.userId, 'Admin')
+    if (options.managerRole === 'Admin') {
+        options.active = await $util.checkRoleByUserId(options.managerId, 'Admin')
     } else {
         return $util.sendFailure(ctx, null, 'Opps, You do not have permission to control')
     }

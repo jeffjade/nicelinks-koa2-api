@@ -38,6 +38,10 @@ const UserSchema = new Schema({
     activeTime: {
         type: Date
     },
+    number: {
+        type: Number,
+        default: 1
+    },
     resetPasswordToken: {
         type: String
     },
