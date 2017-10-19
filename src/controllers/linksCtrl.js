@@ -221,6 +221,18 @@ const getAllLinks = async(ctx, next) => {
     }
 }
 
+const getAllLinksCount = async(ctx, next) => {
+    try {
+        let options = ctx.request.query
+        // 默认只拉去已经审核通过的链接;
+        let params = {active: options.active}
+        let count = await Links.find(params).count()
+        $util.sendSuccess(ctx, count)
+    } catch (error) {
+        $util.sendFailure(ctx, null, 'Opps, Something Error :' + error)
+    }
+}
+
 const getMyPublish = async(ctx, next) => {
     let options = ctx.request.query
     let beVisitedUserId = await $util.findUserIdByUsername(options.username)
@@ -296,6 +308,7 @@ module.exports = {
     getLinksByTag,
     getAllTags,
     getAllLinks,
+    getAllLinksCount,
     addNiceLinks,
     updateNiceLinks,
     deleteNiceLinks,
