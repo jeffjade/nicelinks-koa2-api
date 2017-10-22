@@ -23,6 +23,11 @@ let typeList = {
     title: 'Forgot Your Password?',
     desc: 'It happens. Click the link below to reset your password.',
     button: 'Reset Password'
+  },
+  notice: {
+    title: 'Audit Notice',
+    desc: 'Congratulations, the link you submitted at <a href="https://nicelinks.site">NICE LINKS</a> has been approved; you can click the button below to see.',
+    button: 'Visit View'
   }
 }
 

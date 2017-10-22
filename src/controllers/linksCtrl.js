@@ -1,5 +1,6 @@
 let { Links, Actions } = require('./../models/index')
 let $util = require('./../helper/util')
+let sendMail = require('../helper/nodemailer')
 let _ = require('lodash')
 
 const getActionListByLinkId = (actionList, linkId) => {
@@ -113,11 +114,17 @@ const addNiceLinks = async(ctx, next) => {
 const updateNiceLinks = async(ctx, next) => {
     let options = ctx.request.body
     if (options.managerRole === 'Admin') {
-        options.active = await $util.checkRoleByUserId(options.managerId, 'Admin')
+        let checkAdmin = await $util.checkRoleByUserId(options.managerId, 'Admin')
+        if (!checkAdmin) return
     } else {
         return $util.sendFailure(ctx, null, 'Opps, You do not have permission to control')
     }
     try {
+        const user = await $util.findUser({ username: options.createdBy })
+        if (options.active && user && user.role !== 'Admin') {
+            let linkInUs = `https://nicelinks.site/post/${options._id}`
+            sendMail({ to: user.email, type: 'notice', link: linkInUs })
+        }
         return await Links.update({ '_id': options._id }, { $set: options }).then(async(result) => {
             $util.sendSuccess(ctx, result)
         })
