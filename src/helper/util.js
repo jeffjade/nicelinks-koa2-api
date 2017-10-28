@@ -74,8 +74,6 @@ module.exports = {
     },
 
     sendFailure(ctx, signStr, errMsg) {
-        console.log(ctx.cookies)
-        console.log(ctx.cookies.get('NiceLinksLoginCookie'))
         ctx.body = {
             success: false,
             message: signStr ? errorMsgConfig[signStr]['zh'] : errMsg

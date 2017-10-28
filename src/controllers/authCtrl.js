@@ -69,7 +69,11 @@ exports.login = (ctx, next) => {
             if (!user.active) {
                 return $util.sendFailure(ctx, 'accountNoActive')
             }
-            ctx.cookies.set('NiceLinksLoginCookie', true, {
+            ctx.cookies.set('ns-is-login', true, {
+                maxAge: 3600000,
+                httpOnly: false
+            })
+            ctx.cookies.set('ns-user-id', true, {
                 maxAge: 3600000,
                 httpOnly: false
             })
@@ -88,7 +92,7 @@ exports.login = (ctx, next) => {
 }
 
 exports.logout = (ctx, next) => {
-    ctx.cookies.set('NiceLinksLoginCookie', false)
+    ctx.cookies.set('ns-is-login', false)
     ctx.logout()
     ctx.status = 200
     $util.sendSuccess(ctx, 'logout successfully')
@@ -292,5 +296,31 @@ exports.updateAvatar = async(ctx, next) => {
             console.log('上传图片失败', err)
             return $util.sendFailure(ctx, 'uploadAbatarFail')
 		}
+    }
+}
+
+exports.getAllUsers = async(ctx, next) => {
+    let options = ctx.request.query
+    let params = {active: options.active}
+    let sortParam = {}
+    options.sortTarget ? sortParam[options.sortTarget] = options.sortType : ''
+
+    let limitNumber = parseInt(options.pageSize)
+    let skipNumber = (parseInt(options.pageCount) - 1) * limitNumber
+    try {
+
+        let count = await UserModel.find({active: options.active}).count()
+        return await UserModel.find(params)
+            .sort(sortParam)
+            .limit(limitNumber)
+            .skip(skipNumber)
+            .exec().then(async(result) => {
+                $util.sendSuccess(ctx, {
+                    data: result,
+                    count: count
+                })
+            })
+    } catch (error) {
+        $util.sendFailure(ctx, null, 'Opps, Something Error :' + error)
     }
 }

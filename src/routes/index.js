@@ -89,6 +89,7 @@ router.get('/getUserInfo', AuthController.getUserInfo)
 
 router.post('/updateAvatar', AuthController.updateAvatar)
 
+router.get('/getAllUsers', AuthController.getAllUsers)
 // router.use('/auth', authRoutes.routes())
 
 router.get('/crawlLinksInfo', HelpController.crawlLinksInfo)
