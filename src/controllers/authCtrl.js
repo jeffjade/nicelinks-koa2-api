@@ -73,7 +73,7 @@ exports.login = (ctx, next) => {
                 maxAge: 3600000,
                 httpOnly: false
             })
-            ctx.cookies.set('ns-user-id', true, {
+            ctx.cookies.set('ns-user-id', user._id, {
                 maxAge: 3600000,
                 httpOnly: false
             })
