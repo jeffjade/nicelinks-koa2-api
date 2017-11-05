@@ -2,6 +2,7 @@ let Router = require('koa-router')
 let LinksCtrl = require('../controllers/linksCtrl')
 let AuthController = require('../controllers/authCtrl')
 let HelpController = require('../controllers/helpCtrl')
+let ConfController = require('../controllers/confCtrl')
 let $util = require('../helper/util')
 let fs = require("fs")
 let {join} = require("path")
@@ -92,5 +93,16 @@ router.post('/updateAvatar', AuthController.updateAvatar)
 router.get('/getAllUsers', AuthController.getAllUsers)
 // router.use('/auth', authRoutes.routes())
 
+// --------------------------Help---------------------------
 router.get('/crawlLinksInfo', HelpController.crawlLinksInfo)
+
+// -------------------------Config--------------------------
+router.get('/getAdverts', ConfController.getAdverts)
+
+router.post('/updateAdverts', ConfController.updateAdverts)
+
+router.post('/removeAdverts', ConfController.removeAdverts)
+
+router.get('/getSysConf', ConfController.getSysConf)
+
 module.exports = router
