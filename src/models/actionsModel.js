@@ -19,8 +19,8 @@ const ActionsSchema = new Schema({
     type: Object,
     default: {}
   },
-  created_at: { type: Date, default: Date.now },
-  updated_at: { type: Date, default: Date.now }
+  created_at: { type: Date, default: Date.now() },
+  updated_at: { type: Date, default: Date.now() }
 })
 
 ActionsSchema.index({ link_id: 1 })
