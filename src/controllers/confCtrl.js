@@ -32,6 +32,7 @@ exports.updateAdverts = async(ctx, next) => {
         path: requestBody.path,
         image: requestBody.image,
         active: requestBody.active,
+        sort: requestBody.sort,
         modifyTime: Date.now()
       }
       await Adverts.update({ '_id': requestBody._id }, { $set: adsSetting }).then(result => {

@@ -21,6 +21,10 @@ const AdvertsSchema = new mongoose.Schema({
         type: Boolean,
         default: false,
     },
+    sort: {
+        type: Number,
+        default: 1
+    },
     modifyTime: { 
         type: Date,
         default: Date.now()
