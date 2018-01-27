@@ -31,6 +31,7 @@ exports.updateAdverts = async(ctx, next) => {
       let adsSetting = {
         path: requestBody.path,
         image: requestBody.image,
+        alt: requestBody.alt,
         active: requestBody.active,
         sort: requestBody.sort,
         modifyTime: Date.now()

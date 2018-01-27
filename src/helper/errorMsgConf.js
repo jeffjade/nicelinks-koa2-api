@@ -44,7 +44,11 @@ module.exports = {
     en: 'You must enter an email address.'
   },
   uploadAbatarFail: {
-    zh: '上传图片失败',
+    zh: '上传图片未能成功。',
     en: 'Uploading pictures failed.'
+  },
+  linkHaveBeenAdded: {
+    zh: '该链接已被添加至数据库。',
+    en: 'The Link Have Been Added.'
   }
 }

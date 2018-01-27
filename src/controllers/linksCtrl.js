@@ -107,6 +107,9 @@ const addNiceLinks = async(ctx, next) => {
             })
         })
     } catch (error) {
+        if (error.code === 11000) {
+            return $util.sendFailure(ctx, 'linkHaveBeenAdded')
+        }
         $util.sendFailure(ctx, null, 'Opps, Something Error :' + error)
     }
 }
