@@ -31,7 +31,7 @@ const LinksSchema = new mongoose.Schema({
         type: String,
         default: ''
     },
-    keyword: {
+    keywords: {
         type: String,
         default: ''
     },

@@ -181,10 +181,10 @@ module.exports = {
                 try {
                     let $ = cheerio.load(res.data)
                     let description = $('meta[name="description"]').attr('content')
-                    let keyword = $('meta[name="keyword"]').attr('content')
+                    let keywords = $('meta[name="keywords"]').attr('content')
                     let result = {
                         title: $("title").text() || $('meta[og:title"]').attr('content'),
-                        keyword: keyword || $('meta[property="og:keyword"]').attr('content') || '',
+                        keywords: keyword || $('meta[property="og:keywords"]').attr('content') || '',
                         desc:  description || $('meta[property="og:description"]').attr('content')
                     }
                     resolve(result)
