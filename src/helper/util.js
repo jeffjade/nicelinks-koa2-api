@@ -184,7 +184,7 @@ module.exports = {
                     let keywords = $('meta[name="keywords"]').attr('content')
                     let result = {
                         title: $("title").text() || $('meta[og:title"]').attr('content'),
-                        keywords: keyword || $('meta[property="og:keywords"]').attr('content') || '',
+                        keywords: keywords || $('meta[property="og:keywords"]').attr('content') || '',
                         desc:  description || $('meta[property="og:description"]').attr('content')
                     }
                     resolve(result)
