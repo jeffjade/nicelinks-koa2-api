@@ -49,6 +49,31 @@ const setTokenAndSendMail = async (user, ctx) => {
     }
 }
 
+const settingLoginResult = function (user, ctx) {
+    if (user) {
+        if (!user.active) {
+            return $util.sendFailure(ctx, 'accountNoActive')
+        }
+        ctx.cookies.set('ns-is-login', true, {
+            maxAge: 3600000,
+            httpOnly: false
+        })
+        ctx.cookies.set('ns-user-id', user._id, {
+            maxAge: 3600000,
+            httpOnly: false
+        })
+
+        return $util.sendSuccess(ctx, {
+            role: user.role,
+            _id: user._id,
+            username: user.username,
+            profile: user.profile
+        })
+    } else {
+        return $util.sendFailure(ctx, 'wrongAccountOrPwd')
+    }
+}
+
 // ========================================
 // Login Route
 // ========================================
@@ -64,31 +89,23 @@ exports.checkIsExisted = async(ctx, next) => {
 }
 
 exports.login = (ctx, next) => {
-    return passport.authenticate('local', (err, user, info, status) => {
-        if (user) {
-            if (!user.active) {
-                return $util.sendFailure(ctx, 'accountNoActive')
-            }
-            ctx.cookies.set('ns-is-login', true, {
-                maxAge: 3600000,
-                httpOnly: false
-            })
-            ctx.cookies.set('ns-user-id', user._id, {
-                maxAge: 3600000,
-                httpOnly: false
-            })
+    const requestBody = ctx.request.body
+    const email = requestBody.email
+    const username = requestBody.username
 
-            return $util.sendSuccess(ctx, {
-                role: user.role,
-                _id: user._id,
-                username: user.username,
-                profile: user.profile
-            })
-            // return ctx.login(user)
-        } else {
-            $util.sendFailure(ctx, 'wrongAccountOrPwd')
-        }
-    })(ctx, next)
+    /*
+        Desc: 如果前端参数过来，有 email 且合法，则以 email 来作登录验证，否则用 username;
+        Date: 2018-02-28
+    */
+    if (email && $util.verifyIsLegalEmail(email)) {
+        return passport.authenticate('email-local', (err, user, info, status) => {
+            return settingLoginResult(user, ctx)
+        })(ctx, next)
+    } else {
+        return passport.authenticate('username-local', (err, user, info, status) => {
+            return settingLoginResult(user, ctx)
+        })(ctx, next)
+    }
 }
 
 exports.logout = (ctx, next) => {

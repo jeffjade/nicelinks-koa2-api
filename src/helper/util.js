@@ -139,6 +139,11 @@ module.exports = {
     formatDate(date, rule = 'YYYY-MM-DD') {
         return date && date.Format(rule) || ''
     },
+
+    verifyIsLegalEmail (str) {
+        const pattern = new RegExp('^([a-z0-9_\\.-]+)@([\\da-z\\.-]+)\\.([a-z\\.]{2,6})$', 'g')
+        return pattern.test(str)
+    },
  
     verifyUserIdEffective(userId) {
         let regExp = new RegExp("^[A-Za-z0-9]{24}$|^[A-Za-z0-9]{32}$")
