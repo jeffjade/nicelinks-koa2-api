@@ -35,6 +35,10 @@ const LinksSchema = new mongoose.Schema({
         type: String,
         default: ''
     },
+    review: {
+        type: String,
+        default: ''
+    },
     classify: {
         type: String,
         required: true
