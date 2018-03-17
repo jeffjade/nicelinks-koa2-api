@@ -70,8 +70,12 @@ const getLinksByTag = async(ctx, next) => {
     options.sortTarget ? sortParam[options.sortTarget] = options.sortType : ''
     let limitNumber = parseInt(options.pageSize)
     let skipNumber = (parseInt(options.pageCount) - 1) * limitNumber
+    let params = {
+        tags:  options.tags,
+        active: true
+    }
     try {
-        return await Links.find({'tags':  options.tags})
+        return await Links.find()
             .sort(sortParam)
             .limit(limitNumber)
             .skip(skipNumber)
