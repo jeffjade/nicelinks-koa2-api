@@ -30,7 +30,7 @@ const setTokenAndSendMail = async (user, ctx) => {
     // 保证激活码不会重复
     let buf = crypto.randomBytes(20)
     user.activeToken = user._id + buf.toString('hex')
-    user.activeExpires = Date.now() + 24 * 3600 * 1000
+    user.activeExpires = Date.now() + 48 * 3600 * 1000
     let link = `${config.clientPath}/account?activeToken=` + user.activeToken
 
     // 发送激活邮件
@@ -183,7 +183,7 @@ exports.active = async(ctx, next) => {
     }
     // 激活并保存
     try {
-        let activatedNum = await UserModel.find({active: true}).count()
+        let activatedNum = await UserModel.count({active: true})
         user.active = true
         user.activeTime = new Date()
         user.number = activatedNum + 1
