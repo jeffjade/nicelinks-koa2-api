@@ -75,7 +75,7 @@ const getLinksByTag = async(ctx, next) => {
         active: true
     }
     try {
-        return await Links.find()
+        return await Links.find(params)
             .sort(sortParam)
             .limit(limitNumber)
             .skip(skipNumber)
