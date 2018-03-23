@@ -54,14 +54,13 @@ const settingLoginResult = function (user, ctx) {
         if (!user.active) {
             return $util.sendFailure(ctx, 'accountNoActive')
         }
-        ctx.cookies.set('ns-is-login', true, {
-            maxAge: 3600000,
+        const options = {
+            maxAge: 7200000,
             httpOnly: false
-        })
-        ctx.cookies.set('ns-user-id', user._id, {
-            maxAge: 3600000,
-            httpOnly: false
-        })
+        }
+        ctx.cookies.set('is-login', true, options)
+        ctx.cookies.set('user-id', user._id, options)
+        ctx.cookies.set('username', user.username, options)
 
         return $util.sendSuccess(ctx, {
             role: user.role,
