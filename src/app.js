@@ -12,14 +12,16 @@ let KoaHelmet = require('koa-helmet')
 let KoaSession = require('koa-session2')
 let KoaStatic = require('koa-static')
 let KoaMount = require('koa-mount')
-let KoaRedisCache = require('koa-redis-cache')
 let KoaRedis = require('koa-redis')
 let cors = require('koa2-cors')
 let config = require('./config')
 let logger = require('./helper/logger')
+let applyMiddleware = require('./middlewares').applyMiddleware
 
 const app = new Koa()
 const bodyparser = Bodyparser()
+
+applyMiddleware(app)
 
 app.use(cors({
     origin: '*',
@@ -29,15 +31,6 @@ app.use(cors({
     allowHeaders: ['Content-Type', 'Authorization', 'Accept']
 }))
 
-// var redis   = require('redis')
-// var client  = redis.createClient(config.redis.session.port, config.redis.session.host)
-// client.on("error", function(error) {
-//     console.log(error)
-// })
-// client.on("connect", () => {
-//     console.log('connect success !')
-// })
-
 // 替换'x-koa-redis-cache' 为'x-server-cache' 同helmet信息隐藏
 app.use(async (ctx, next) => {
   await next()
@@ -46,15 +39,6 @@ app.use(async (ctx, next) => {
     ctx.set('x-server-cache', true)
   }
 })
-
-// koa层面 api返回 基于redis缓存
-app.use(KoaRedisCache({
-    redis: config.redis.session,
-    routes: [{
-        path: '/api/',
-        expire: 60
-    }]
-}))
 
 // middlewares
 app.use(convert(bodyparser))

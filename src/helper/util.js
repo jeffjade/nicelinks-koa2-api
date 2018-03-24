@@ -6,18 +6,19 @@
       (new Date()).Format("YYYY-M-D h:m:s.S")      ==> 2006-7-2 8:9:4.18
 */
 
-let axios = require('axios')
-let cheerio = require('cheerio')
-let _ = require('lodash')
-let fs = require('fs')
-let path = require('path')
-let mongoSanitize = require('mongo-sanitize')
-let formidable = require('formidable')
+const axios = require('axios')
+const cheerio = require('cheerio')
+const _ = require('lodash')
+const fs = require('fs')
+const path = require('path')
+const mongoSanitize = require('mongo-sanitize')
+const formidable = require('formidable')
+const Url = require('url')
 
-let errorMsgConfig = require('./errorMsgConf.js')
-let successMsgConfig = require('./successMsgConf.js')
-let { UserModel } = require('./../models/index')
-let config = require('./../config')
+const errorMsgConfig = require('./errorMsgConf.js')
+const successMsgConfig = require('./successMsgConf.js')
+const { UserModel } = require('./../models/index')
+const config = require('./../config')
 
 
 // 原有的mongoSanitize不递归过滤
@@ -50,12 +51,26 @@ Date.prototype.Format = function (fmt) {
 }
 
 module.exports = {
-    sendSuccess(ctx, result) {
+    // 安全过滤ctx.query/ctx.request.body等
+    sanitize (obj) {
+        mongoSanitizeRecurse(obj)
+    },
+
+    sendSuccess(ctx, result, isUpdateRedis = true) {
         ctx.statstatusus = 200
         ctx.body = {
             success: true,
             value: result
         }
+        /*
+        @desc: 使用 Redis 将 GET 请求做缓存, 以提升效率 & 减少数据库压力;
+        @date: 2018-03-24
+        */
+       if (config.isOpenRedisFlag && isUpdateRedis) {
+            const ApiCache = require('./../services/apiCache').ApiCache
+            console.log(ctx.request.cacheKey)
+            ApiCache.set(ctx.request.cacheKey, ctx.body)
+       }
     },
 
     sendSuccessWithMsg (ctx, signStr, extraParam) {
@@ -66,11 +81,6 @@ module.exports = {
             success: true,
             value: msgVal
         }
-    },
-
-    // 安全过滤ctx.query/ctx.request.body等
-    sanitize (obj) {
-        mongoSanitizeRecurse(obj)
     },
 
     sendFailure(ctx, signStr, errMsg) {
@@ -166,6 +176,26 @@ module.exports = {
             return unescape(r[2])
         }
         return null
+    },
+
+    easyCompressString (str = '', factor = 9) {
+        str = str.toString()
+        let result = 0;
+        for (var i = 0; i < str.length; i++) {
+            result += str.charCodeAt(i) * factor
+        }
+        return result
+    },
+
+    getRedisCacheKey(ctx) {
+        const request = ctx.request
+        const originUrlParsed = Url.parse(request.originalUrl)
+      
+        const cachePath = originUrlParsed ? originUrlParsed.pathname : ''
+        const cacheParam = this.easyCompressString(originUrlParsed.path, 88)
+        const cacheKey = `${cachePath}-${cacheParam}`
+        console.log(`Current cacheKey is : ${cacheKey}`)
+        return cacheKey
     },
 
     getQueryObject(queryStr) {
