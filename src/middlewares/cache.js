@@ -3,6 +3,7 @@ const $util = require('./../helper/util')
 
 exports.RedisCache =  async function (ctx, next) {
   const request = ctx.request
+  console.log('RedisCache', request.url)
   if (request.url.indexOf('/api/') === -1 && request.method !== 'GET') {
     return await next()
   }

@@ -66,9 +66,9 @@ module.exports = {
         @desc: 使用 Redis 将 GET 请求做缓存, 以提升效率 & 减少数据库压力;
         @date: 2018-03-24
         */
-       if (config.isOpenRedisFlag && isUpdateRedis) {
+       const cacheKey = ctx.request.cacheKey
+       if (config.isOpenRedisFlag && isUpdateRedis && cacheKey) {
             const ApiCache = require('./../services/apiCache').ApiCache
-            console.log(ctx.request.cacheKey)
             ApiCache.set(ctx.request.cacheKey, ctx.body)
        }
     },

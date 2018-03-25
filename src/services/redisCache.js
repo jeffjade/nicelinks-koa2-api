@@ -28,6 +28,7 @@ class RedisCache {
   constructor(settings) {
     this.settings = settings
     this.options = settings.options
+    this.redisClient = null
     this.setup()
   }
 
@@ -46,7 +47,6 @@ class RedisCache {
     this.redisClient.on("connect", () => {
       console.log('✅ 💃 connect redis success !')
     })
-
   }
 
   async set (key, val) {
@@ -61,13 +61,21 @@ class RedisCache {
 
     try{
       const result = this.redisClient.setAsync(key, val)
-      this.redisClient.expire(key, 60)
+      this.redisClient.expire(key, 180)
       if (result.toString() === 'OK') {
         return val
       }
     } catch (error) {
       throw new Error(`❌ Set cache failed, key is ${key}`)
     }
+  }
+
+  /**
+   * @desc 为某条 Key 设置对应的过期时长;
+   * @param {*} time 单位(S) 默认三分钟.
+   */
+  async setExpire (key, length = 180) {
+    this.redisClient.expire(key, length)
   }
 
   async get (key) {
