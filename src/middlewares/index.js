@@ -1,4 +1,3 @@
-let fs = require('fs')
 let path = require('path')
 let cors = require('koa2-cors')
 let json = require('koa-json')
@@ -11,10 +10,9 @@ let KoaSession = require('koa-session2')
 let KoaRedis = require('koa-redis')
 let Bodyparser = require('koa-bodyparser')
 
-let config = require('./../config')
-const PageCache = require('./../services/pageCache').PageCache
-
 let bodyparser = Bodyparser()
+
+let config = require('./../config')
 
 function applyMiddleware (app) {
   app.use(cors({
@@ -25,6 +23,10 @@ function applyMiddleware (app) {
     allowHeaders: ['Content-Type', 'Authorization', 'Accept']
   }))
 
+  app.use(convert(bodyparser))
+  app.use(convert(json()))
+  app.use(KoaHelmet())
+
   // 替换'x-koa-redis-cache' 为'x-server-cache' 同helmet信息隐藏
   app.use(async (ctx, next) => {
     await next()
@@ -32,21 +34,6 @@ function applyMiddleware (app) {
       ctx.remove('x-koa-redis-cache')
       ctx.set('x-server-cache', true)
     }
-  })
-
-  if (config.isOpenRedisFlag) {
-    app.use(require('./cache').RedisCache)
-  }
-
-  // response router
-  app.use(async(ctx, next) => {
-    if (ctx.request.url.indexOf('/api/') === -1) {
-        let filePath = __dirname + '/../../public/index.html'
-        let content = fs.readFileSync(filePath, 'utf8')
-        ctx.body = content
-        return
-    }
-    await require('./../routes').routes()(ctx, next)
   })
 
   app.proxy = true
@@ -61,9 +48,7 @@ function applyMiddleware (app) {
   app.use(config.passport.initialize())
   app.use(config.passport.session())
 
-  app.use(convert(bodyparser))
-  app.use(convert(json()))
-  app.use(KoaHelmet())
+  app.use(require('./cache').RedisCache)
 
   // handle static
   app.use(convert(KoaStatic(path.join(__dirname, '../../public'), {

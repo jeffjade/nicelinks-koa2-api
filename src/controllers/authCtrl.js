@@ -109,7 +109,6 @@ exports.login = (ctx, next) => {
 
 exports.logout = (ctx, next) => {
     ctx.cookies.set('ns-is-login', false)
-    ctx.logout()
     ctx.status = 200
     $util.sendSuccess(ctx, 'logout successfully')
 }
@@ -277,7 +276,6 @@ exports.getUserInfo = async (ctx, next) => {
     if (!user) {
         return $util.sendFailure(ctx, 'accountNotRegistered')
     } else {
-        console.log(user)
         return $util.sendSuccess(ctx, {
             username: user.username,
             profile: user.profile,
