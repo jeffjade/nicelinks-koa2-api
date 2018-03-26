@@ -9,7 +9,6 @@ exports.RedisCache =  async function (ctx, next) {
   const isRequestApi = request.url.indexOf('/api/') > -1
   const isRequestSource = request.url.indexOf('/static/') > -1
 
-  console.log(request.url)
   if (!isRequestApi && !isRequestSource) {
     if (global.indexPageContent) {
       ctx.body = global.indexPageContent
@@ -22,7 +21,10 @@ exports.RedisCache =  async function (ctx, next) {
     return
   }
 
-  if (isRequestApi && config.isOpenRedisFlag && request.method === 'GET') {
+  if ( isRequestApi &&
+    config.isOpenRedisFlag &&
+    request.method === 'GET' &&
+    !$util.isInRedisIgnoreList(ctx) ) {
     // 设置 cacheKey 以便在获得数据库的结果处，将数据依据此 key 存入此 Redis;
     const cacheKey = $util.getRedisCacheKey(ctx)
     ctx.request.cacheKey = cacheKey
