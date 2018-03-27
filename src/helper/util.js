@@ -200,7 +200,10 @@ module.exports = {
 
 	isInRedisIgnoreList(ctx) {
 		const ignoreApiList = [
-			'crawlLinksInfo'
+			'crawlLinksInfo',
+			'getNiceLinks',
+			'getUserInfo',
+			'getProfile'
 		]
 		const currentUrl = ctx.request.url
 		let isInIgnoreListFlag = false
