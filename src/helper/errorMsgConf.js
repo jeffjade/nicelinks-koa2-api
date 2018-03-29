@@ -8,8 +8,8 @@ module.exports = {
     en: 'Incorrect username or password.'
   },
   accountNoActive: {
-    zh: '此账号尚未激活。',
-    en: 'This account has not been activated yet'
+    zh: '此账号尚未激活，已重新发送邮件至您的邮箱，请及时激活。',
+    en: 'This account has not been activated yet, The mail has been sent to your mailbox again. Please activate it in time.'
   },
   nameHadRegistered: {
     zh: '该名称已被注册。',

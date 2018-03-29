@@ -44,8 +44,8 @@ let sendMail = (params = {}) => {
   smtpTransport.sendMail({
     from    : params.from || `倾城之链<${user}>`,
     to      : params.to || '<1259134802@qq.com>',
-    subject : 'Welcome to join Nice Links ！',
-    html    : htmlBody || 'www.jeffjade.com'
+    subject : 'Welcome To Join NICE LINKS ！',
+    html    : htmlBody || 'https://jeffjade.com'
   }, function(err, res) {
       if (err) {
         console.log(err, res)

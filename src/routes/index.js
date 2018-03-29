@@ -91,6 +91,8 @@ router.get('/getUserInfo', AuthController.getUserInfo)
 router.post('/updateAvatar', AuthController.updateAvatar)
 
 router.get('/getAllUsers', AuthController.getAllUsers)
+
+router.post('/removeUserById', AuthController.removeUserById)
 // router.use('/auth', authRoutes.routes())
 
 // --------------------------Help---------------------------

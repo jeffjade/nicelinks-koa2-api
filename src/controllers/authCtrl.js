@@ -33,9 +33,12 @@ const setTokenAndSendMail = async (user, ctx) => {
     user.activeExpires = Date.now() + 48 * 3600 * 1000
     let link = `${config.clientPath}/account?activeToken=` + user.activeToken
 
-    // 发送激活邮件
+    // 发送激活邮件；如果参数中没有 Email，则取 username 查出；
+    if (!user.email || !$util.verifyIsLegalEmail(user.email)) {
+        let foundUser = await $util.findUser({ username: user.username })
+        user.email = foundUser.username === user.username && foundUser.email
+    }
     sendMail({ to: user.email, type: 'active', link: link })
-
     try {
         await new Promise((resolve, reject) => {
             user.save((err) => {
@@ -43,15 +46,16 @@ const setTokenAndSendMail = async (user, ctx) => {
                 resolve()
             })
         })
-        $util.sendSuccessWithMsg(ctx, 'sendEmailSuccess', user.email)
     } catch (err) {
         throw err
     }
 }
 
-const settingLoginResult = function (user, ctx) {
+const settingLoginResult = async (user, ctx) => {
     if (user) {
         if (!user.active) {
+            // 如果用户没有及时激活，则在登录时候重新发送激活邮件；
+            await setTokenAndSendMail(user, ctx)
             return $util.sendFailure(ctx, 'accountNoActive')
         }
         const options = {
@@ -149,7 +153,8 @@ exports.signup = async(ctx, next) => {
             }
             user.username = username
             user.password = password
-            return setTokenAndSendMail(user, ctx)
+            await setTokenAndSendMail(user, ctx)
+            return $util.sendSuccessWithMsg(ctx, 'sendEmailSuccess', user.email)
         } else {
             return $util.sendFailure(ctx, 'mailboxHadRegistered')
         }
@@ -161,7 +166,8 @@ exports.signup = async(ctx, next) => {
             registeTime: new Date(),
             profile: {}
         })
-        return setTokenAndSendMail(user, ctx)
+        await setTokenAndSendMail(user, ctx)
+        return $util.sendSuccessWithMsg(ctx, 'sendEmailSuccess', user.email)
     }
 }
 
@@ -334,6 +340,21 @@ exports.getAllUsers = async(ctx, next) => {
                     count: count
                 })
             })
+    } catch (error) {
+        $util.sendFailure(ctx, null, 'Opps, Something Error :' + error)
+    }
+}
+
+exports.removeUserById = async(ctx, next) => {
+    let options = ctx.request.body
+    let isAdmin = await $util.checkRoleByUserId(options.operatorId, 'Admin')
+    if (!isAdmin) {
+        return $util.sendFailure(ctx, null, 'Opps, You do not have permission to control')
+    }
+    try {
+        return await UserModel.remove({ '_id': options._id }).then(async(result) => {
+            $util.sendSuccess(ctx, result)
+        })
     } catch (error) {
         $util.sendFailure(ctx, null, 'Opps, Something Error :' + error)
     }
