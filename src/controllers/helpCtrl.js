@@ -11,8 +11,6 @@ const getAccessToken = () => {
         const requestUrl = baseUrl + `appid=${appid}&secret=${secret}`
         console.log('Current getAccessToken requestUrl is: ', requestUrl)
         return axios.get(requestUrl).then((result) => {
-            console.log(result)
-            console.log('-----result-----')
             resolve(result.data)
         }).catch(err => {
             console.log("Opps, Axios Error Occurred !" + err)
@@ -36,11 +34,13 @@ const getWechatTicket = (params) => {
 }
 
 exports.getWechatApiSignature = async(ctx, next) => {
+    const url = ctx.request.query.url
+    console.log('url+++++++++++++++++++++')
+    console.log(url)
     const requestParam = await getAccessToken()
     const result = await getWechatTicket(requestParam)
     const noncestr = $util.generateRandomStr(16)
     const timestamp = (new Date()).getTime()
-    const url = 'https://nicelinks.site/'
     const signatureFields = [
         `jsapi_ticket=${result.ticket}`,
         `noncestr=${noncestr}`,
