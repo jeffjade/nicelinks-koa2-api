@@ -11,6 +11,8 @@ const getAccessToken = () => {
         const requestUrl = baseUrl + `appid=${appid}&secret=${secret}`
         console.log('Current getAccessToken requestUrl is: ', requestUrl)
         return axios.get(requestUrl).then((result) => {
+            console.log(result)
+            console.log('-----result-----')
             resolve(result.data)
         }).catch(err => {
             console.log("Opps, Axios Error Occurred !" + err)
