@@ -8,8 +8,8 @@ const getAccessToken = () => {
         const baseUrl = 'https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&'
         const appid = secretConf.appid
         const secret = secretConf.secret
-        const reqestUrl = baseUrl + `appid=${appid}&secret=${secret}`
-        return axios.get(reqestUrl).then((result) => {
+        const requestUrl = baseUrl + `appid=${appid}&secret=${secret}`
+        return axios.get(requestUrl).then((result) => {
             resolve(result.data)
         }).catch(err => {
             console.log("Opps, Axios Error Occurred !" + err)
@@ -21,8 +21,9 @@ const getAccessToken = () => {
 const getWechatTicket = (params) => {
     return new Promise((resolve, reject) => {
         const baseUrl = 'https://api.weixin.qq.com/cgi-bin/ticket/getticket?&type=jsapi'
-        const reqestUrl = baseUrl + `&access_token=${params.access_token}`
-        return axios.get(reqestUrl).then((res) => {
+        const requestUrl = baseUrl + `&access_token=${params.access_token}`
+        console.log('Current requestUrl is: ', requestUrl)
+        return axios.get(requestUrl).then((res) => {
             resolve(res.data)
         }).catch(err => {
             console.log("Opps, Axios Error Occurred !" + err)
@@ -34,12 +35,11 @@ const getWechatTicket = (params) => {
 exports.getWechatApiSignature = async(ctx, next) => {
     const requestParam = await getAccessToken()
     const result = await getWechatTicket(requestParam)
-    const jsapi_ticket = result.ticket;
     const noncestr = $util.generateRandomStr(16)
     const timestamp = (new Date()).getTime()
     const url = 'https://nicelinks.site/'
     const signatureFields = [
-        `jsapi_ticket=${jsapi_ticket}`,
+        `jsapi_ticket=${result.ticket}`,
         `noncestr=${noncestr}`,
         `timestamp=${timestamp}`,
         `url=${url}`
