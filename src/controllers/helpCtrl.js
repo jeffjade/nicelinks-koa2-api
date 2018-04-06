@@ -45,6 +45,7 @@ exports.getWechatApiSignature = async(ctx, next) => {
         `url=${url}`
     ]
     const signatureStr = signatureFields.join('&')
+    console.log('💯 Current SignatureStr Is: ', signatureStr)
     const signature = sha1(signatureStr)
     
     return  $util.sendSuccess(ctx, {
