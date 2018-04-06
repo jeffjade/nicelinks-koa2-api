@@ -98,6 +98,8 @@ router.post('/removeUserById', AuthController.removeUserById)
 // --------------------------Help---------------------------
 router.get('/crawlLinksInfo', HelpController.crawlLinksInfo)
 
+router.get('/getWechatApiSignature', HelpController.getWechatApiSignature)
+
 // -------------------------Config--------------------------
 router.get('/getAdverts', ConfController.getAdverts)
 

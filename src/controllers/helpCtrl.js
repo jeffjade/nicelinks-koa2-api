@@ -1,6 +1,61 @@
-let $util = require('./../helper/util')
+const $util = require('./../helper/util'),
+    axios = require('axios'),
+    secretConf = require("./../config/secret"),
+    sha1 = require('sha1')
 
-const crawlLinksInfo = async(ctx, next) => {
+const getAccessToken = () => {
+    return new Promise((resolve, reject) => {
+        const baseUrl = 'https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&'
+        const appid = secretConf.appid
+        const secret = secretConf.secret
+        const reqestUrl = baseUrl + `appid=${appid}&secret=${secret}`
+        return axios.get(reqestUrl).then((result) => {
+            resolve(result.data)
+        }).catch(err => {
+            console.log("Opps, Axios Error Occurred !" + err)
+            resolve({})
+        })
+    })
+}
+
+const getWechatTicket = (params) => {
+    return new Promise((resolve, reject) => {
+        const baseUrl = 'https://api.weixin.qq.com/cgi-bin/ticket/getticket?&type=jsapi'
+        const reqestUrl = baseUrl + `&access_token=${params.access_token}`
+        return axios.get(reqestUrl).then((res) => {
+            resolve(res.data)
+        }).catch(err => {
+            console.log("Opps, Axios Error Occurred !" + err)
+            resolve({})
+        })
+    })
+}
+
+exports.getWechatApiSignature = async(ctx, next) => {
+    const requestParam = await getAccessToken()
+    const result = await getWechatTicket(requestParam)
+    const jsapi_ticket = result.ticket;
+    const noncestr = $util.generateRandomStr(16)
+    const timestamp = (new Date()).getTime()
+    const url = 'https://nicelinks.site/'
+    const signatureFields = [
+        `jsapi_ticket=${jsapi_ticket}`,
+        `noncestr=${noncestr}`,
+        `timestamp=${timestamp}`,
+        `url=${url}`
+    ]
+    const signatureStr = signatureFields.join('&')
+    const signature = sha1(signatureStr)
+    
+    return  $util.sendSuccess(ctx, {
+        appId: secretConf.appid,
+        timestamp: timestamp,
+        nonceStr: noncestr,
+        signature: signature
+    })
+}
+
+exports.crawlLinksInfo = async(ctx, next) => {
     let options = ctx.request.query
     try {
       return await $util.getWebPageInfo(options.url).then(result => {
@@ -10,8 +65,4 @@ const crawlLinksInfo = async(ctx, next) => {
         ctx.status = 500
         ctx.body = 'Opps, Something Error :' + error
     }
-}
-
-module.exports = {
-    crawlLinksInfo
 }

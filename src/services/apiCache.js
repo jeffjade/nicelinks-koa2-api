@@ -52,6 +52,10 @@ class ApiCache extends RedisCache {
     return super.set(key, newVal)
   }
 
+  async setExpire (key, length = 180) {
+    super.setExpire(key, length)
+  }
+
   async get (key) {
     const result = await super.get(key)
     if (!result) {

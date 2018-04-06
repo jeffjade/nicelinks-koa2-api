@@ -68,8 +68,14 @@ module.exports = {
 		*/
 		const cacheKey = ctx.request.cacheKey
 		if (config.isOpenRedisFlag && isUpdateRedis && cacheKey && !this.isInRedisIgnoreList(ctx)) {
-			const ApiCache = require('./../services/apiCache').ApiCache
+			const ApiCache = require('./../services/apiCache').ApiCache			
 			ApiCache.set(ctx.request.cacheKey, ctx.body)
+
+			if (ctx.request.url.indexOf('getWechatApiSignature')) {
+				console.log('ctx.request.url')
+				console.log(ctx.request.url)
+				ApiCache.setExpire(ctx.request.cacheKey, 7200)
+			}
 		}
 	},
 
@@ -249,6 +255,16 @@ module.exports = {
 				resolve({})
 			})
 		})
+	},
+
+	generateRandomStr (length = 16) {
+		let randomStr = ""
+		const possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
+		const possibleLen = possible.length
+    for( var i=0; i < 5; i++ ) {
+			randomStr += possible.charAt(Math.floor(Math.random() * possibleLen));
+		}
+    return randomStr;
 	},
 
 	async saveAvatarAndGetPath(req, imgName) {
