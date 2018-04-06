@@ -74,7 +74,7 @@ module.exports = {
 			if (ctx.request.url.indexOf('getWechatApiSignature')) {
 				console.log('ctx.request.url')
 				console.log(ctx.request.url)
-				ApiCache.setExpire(ctx.request.cacheKey, 7200)
+				ApiCache.setExpire(ctx.request.cacheKey, 720)
 			}
 		}
 	},
