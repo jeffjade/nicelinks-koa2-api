@@ -9,6 +9,7 @@ const getAccessToken = () => {
         const appid = secretConf.appid
         const secret = secretConf.secret
         const requestUrl = baseUrl + `appid=${appid}&secret=${secret}`
+        console.log('Current getAccessToken requestUrl is: ', requestUrl)
         return axios.get(requestUrl).then((result) => {
             resolve(result.data)
         }).catch(err => {
