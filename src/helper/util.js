@@ -261,7 +261,7 @@ module.exports = {
 		let randomStr = ""
 		const possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
 		const possibleLen = possible.length
-    for( var i=0; i < 5; i++ ) {
+    for( let i = 0; i < length; i++ ) {
 			randomStr += possible.charAt(Math.floor(Math.random() * possibleLen));
 		}
     return randomStr;
