@@ -35,8 +35,6 @@ const getWechatTicket = (params) => {
 
 exports.getWechatApiSignature = async(ctx, next) => {
     const url = ctx.request.query.url
-    console.log('url+++++++++++++++++++++')
-    console.log(url)
     const requestParam = await getAccessToken()
     const result = await getWechatTicket(requestParam)
     const noncestr = $util.generateRandomStr(16)

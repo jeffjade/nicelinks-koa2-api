@@ -1,17 +1,7 @@
 let nodemailer  = require("nodemailer"),
   path = require('path'),
   fs = require("fs"),
-  user = require("./../config/secret").user,
-  pass = require("./../config/secret").pass
-
-let smtpTransport = nodemailer.createTransport({
-  host: "smtp.163.com",
-  secure: true,
-  auth: {
-    user: user,
-    pass: pass
-  }
-})
+  secretConf = require("./../config/secret")
 
 let typeList = {
   active: {
@@ -41,8 +31,22 @@ let sendMail = (params = {}) => {
     .replace('#LINK#', params.link)
 
   let subject = typeList[params.type].desc
+
+  // 对于是使用“QQ”邮箱注册用户，则使用"QQ"邮箱发送激活邮件；其他则 163 邮箱；
+  const isQQRegister = params.to.indexOf('@qq.com') > -1
+  const authConf = isQQRegister ? secretConf.email_qq : secretConf.email_163
+  
+  let smtpTransport = nodemailer.createTransport({
+    host: isQQRegister ? 'smtp.qq.com' : 'smtp.163.com',
+    secure: true,
+    auth: {
+      user: authConf.account,
+      pass: authConf.password
+    }
+  })
+
   smtpTransport.sendMail({
-    from    : params.from || `倾城之链<${user}>`,
+    from    : params.from || `倾城之链<${authConf.account}>`,
     to      : params.to || '<1259134802@qq.com>',
     subject : 'Welcome To Join NICE LINKS ！',
     html    : htmlBody || 'https://jeffjade.com'
