@@ -24,19 +24,18 @@ let typeList = {
 let mailTemp = fs.readFileSync(path.join(__dirname, './../../views/mailTemp.html'),{encoding:'utf-8'})
 
 let sendMail = (params = {}) => {
-  let htmlBody = mailTemp
-    .replace('#TITLE#', typeList[params.type].title)
+  const htmlBody = mailTemp
     .replace('#DESC#', typeList[params.type].desc)
     .replace('#BUTTON#', typeList[params.type].button)
     .replace('#LINK#', params.link)
 
-  let subject = typeList[params.type].desc
+  const subject = typeList[params.type].title
 
   // 对于是使用“QQ”邮箱注册用户，则使用"QQ"邮箱发送激活邮件；其他则 163 邮箱；
   const isQQRegister = params.to.indexOf('@qq.com') > -1
   const authConf = isQQRegister ? secretConf.email_qq : secretConf.email_163
   
-  let smtpTransport = nodemailer.createTransport({
+  const smtpTransport = nodemailer.createTransport({
     host: isQQRegister ? 'smtp.qq.com' : 'smtp.163.com',
     secure: true,
     auth: {
@@ -48,7 +47,7 @@ let sendMail = (params = {}) => {
   smtpTransport.sendMail({
     from    : params.from || `倾城之链<${authConf.account}>`,
     to      : params.to || '<1259134802@qq.com>',
-    subject : 'Welcome To Join NICE LINKS ！',
+    subject : subject,
     html    : htmlBody || 'https://jeffjade.com'
   }, function(err, res) {
       if (err) {
