@@ -5,19 +5,19 @@ let nodemailer  = require("nodemailer"),
 
 let typeList = {
   active: {
-    title: 'Welcome to join Us！',
-    desc: 'Welcome to join Nice Links, in order to ensure the normal use, please within 24 hours, click the following link to complete the mail verification.',
-    button: 'Activate Account'
+    title: '激活您在「倾城之链」的专属账户',
+    desc: '欢迎您加入<a href="https://nicelinks.site">倾城之链 | NICE LINKS</a>，为了保证正常使用，请在 48 小时内，点击以按钮完成邮件验证，以激活账户。',
+    button: '激活账户'
   },
   reset: {
-    title: 'Forgot Your Password?',
-    desc: 'It happens. Click the link below to reset your password.',
-    button: 'Reset Password'
+    title: '重设您在「倾城之链」的登录密码',
+    desc: '如果您忘记了密码，可点击下面的链接来重置密码；愿您在<a href="https://nicelinks.site">倾城之链 | NICE LINKS</a>。',
+    button: '重设密码'
   },
   notice: {
-    title: 'Audit Notice',
-    desc: 'Congratulations, the link you submitted at <a href="https://nicelinks.site">NICE LINKS</a> has been approved; you can click the button below to see.',
-    button: 'Visit View'
+    title: '来自「倾城之链」的温馨提醒',
+    desc: 'Congratulations, 您提交于<a href="https://nicelinks.site">倾城之链 | NICE LINKS</a>的优质站点，已被授意通过，您可以点击下面的按钮前往查看。',
+    button: '前往访问'
   }
 }
 
