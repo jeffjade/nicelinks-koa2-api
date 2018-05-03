@@ -4,10 +4,26 @@ const ApiCache = require('./../services/apiCache').ApiCache
 const $util = require('./../helper/util')
 let config = require('./../config')
 
+const getServiceWorker = () => {
+  let filePath = __dirname + '/../../public/service-worker.js'
+  let content = fs.readFileSync(filePath, 'utf8')
+  global.serviceWorkerConttent = content
+  return content
+}
+
 exports.RedisCache =  async function (ctx, next) {
   const request = ctx.request
   const isRequestApi = request.url.indexOf('/api/') > -1
   const isRequestSource = request.url.indexOf('/static/') > -1
+
+  if (request.url === '/service-worker.js') {
+    if (global.serviceWorkerConttent) {
+      ctx.body = global.serviceWorkerConttent
+      return
+    }
+    ctx.body = getServiceWorker()
+    return
+  }
 
   if (!isRequestApi && !isRequestSource) {
     if (global.indexPageContent) {
