@@ -7,7 +7,7 @@ let config = require('./../config')
 const getServiceWorker = () => {
   let filePath = __dirname + '/../../public/service-worker.js'
   let content = fs.readFileSync(filePath, 'utf8')
-  global.serviceWorkerConttent = content
+  global.serviceWorkerContent = content
   return content
 }
 
@@ -17,7 +17,7 @@ exports.RedisCache =  async function (ctx, next) {
   const isRequestSource = request.url.indexOf('/static/') > -1
 
   if (request.url === '/service-worker.js') {
-    ctx.body = global.serviceWorkerConttent || getServiceWorker()
+    ctx.body = global.serviceWorkerContent || getServiceWorker()
     return
   }
 
