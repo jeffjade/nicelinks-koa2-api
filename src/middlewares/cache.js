@@ -16,6 +16,7 @@ exports.RedisCache =  async function (ctx, next) {
   const isRequestApi = request.url.indexOf('/api/') > -1
   const isRequestSource = request.url.indexOf('/static/') > -1
 
+  console.log('request.url', request.url)
   if (request.url === '/service-worker.js') {
     ctx.body = global.serviceWorkerContent || getServiceWorker()
     return
