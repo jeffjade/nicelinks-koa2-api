@@ -187,7 +187,8 @@ exports.active = async(ctx, next) => {
     }
     // 激活并保存
     try {
-        let activatedNum = await UserModel.count({active: true})
+        // let activatedNum = await UserModel.count({active: true})
+        let activatedNum = await UserModel.find({active: true}).count()
         user.active = true
         user.activeTime = new Date()
         user.number = activatedNum + 1
