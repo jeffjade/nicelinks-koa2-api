@@ -58,8 +58,9 @@ const settingLoginResult = async (user, ctx) => {
             await setTokenAndSendMail(user, ctx)
             return $util.sendFailure(ctx, 'accountNoActive')
         }
+        const timeOfValidity = 7 * 24 * 3600000
         const options = {
-            maxAge: 7200000,
+            maxAge: timeOfValidity,
             httpOnly: false
         }
         ctx.cookies.set('is-login', true, options)
