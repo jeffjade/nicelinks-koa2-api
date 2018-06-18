@@ -209,7 +209,9 @@ module.exports = {
 			'crawlLinksInfo',
 			'getNiceLinks',
 			'getUserInfo',
-			'getProfile'
+			'getProfile',
+			'getRandomSentence',
+			'getSysConf'
 		]
 		const currentUrl = ctx.request.url
 		let isInIgnoreListFlag = false

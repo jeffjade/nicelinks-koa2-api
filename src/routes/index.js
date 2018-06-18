@@ -101,12 +101,21 @@ router.get('/crawlLinksInfo', HelpController.crawlLinksInfo)
 router.get('/getWechatApiSignature', HelpController.getWechatApiSignature)
 
 // -------------------------Config--------------------------
+router.get('/getSysConf', ConfController.getSysConf)
+
 router.get('/getAdverts', ConfController.getAdverts)
 
 router.post('/updateAdverts', ConfController.updateAdverts)
 
 router.post('/removeAdverts', ConfController.removeAdverts)
 
-router.get('/getSysConf', ConfController.getSysConf)
+// -----------Sentences-----------@18-06-18
+router.get('/getSentences', ConfController.getSentences)
+
+router.post('/updateSentences', ConfController.updateSentences)
+
+router.post('/removeSentences', ConfController.removeSentences)
+
+router.post('/getRandomSentence', ConfController.getRandomSentence)
 
 module.exports = router
