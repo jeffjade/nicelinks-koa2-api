@@ -105,6 +105,7 @@ exports.updateSentences = async (ctx, next) => {
         $util.sendSuccess(ctx, result)
       })
     } else {
+      sentencesSetting.createTime = Date.now()
       await Sentences.create(sentencesSetting).then(result => {
         $util.sendSuccess(ctx, result)
       })
