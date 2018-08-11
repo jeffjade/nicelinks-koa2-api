@@ -186,13 +186,19 @@ exports.active = async(ctx, next) => {
     if (!user) {
         return $util.sendFailure(ctx, 'activeValidationFailed')
     }
-    // 激活并保存
+    // 激活并保存(同时设置用户的 number - 第几位注册用户)
     try {
         // let activatedNum = await UserModel.count({active: true})
         // let activatedNum = await UserModel.find({active: true}).count()
-        const allUserList = await UserModel.find({active: true})
-        let activatedNum = allUserList.length
-        user.number = activatedNum + 1
+        // const allUserList = await UserModel.find({active: true})
+        let userAggregateArr = await UserModel.aggregate(
+            [
+               { $match : { active : true } },
+                // a group specification must include an _id;
+               { $group: { _id: null, count: { $sum: 1 } } }
+            ]
+        )
+        user.number = userAggregateArr[0].count + 1
         user.active = true
         user.activeTime = new Date()
         await new Promise((resolve, reject) => {
