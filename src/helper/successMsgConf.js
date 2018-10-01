@@ -6,5 +6,9 @@ module.exports = {
   resetPwdSuccess: {
     zh: '成功重新设置密码',
     en: 'Successfully reset the password'
+  },
+  successfulActivation: {
+   zh: '已成功激活账户' ,
+   en: '🎉 Successfully Activated'
   }
 }

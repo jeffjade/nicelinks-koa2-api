@@ -211,6 +211,7 @@ module.exports = {
 			'getUserInfo',
 			'getProfile',
 			'getRandomSentence',
+			'active',
 			'getSysConf'
 		]
 		const currentUrl = ctx.request.url

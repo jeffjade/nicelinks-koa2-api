@@ -1,13 +1,12 @@
 let mongoose = require('mongoose'),
-  Schema = mongoose.Schema,
-  ObjectId = mongoose.Schema.ObjectId
+  Schema = mongoose.Schema
 
 /* Solve Problem: (node) DeprecationWarning:
   Mongoose: mpromise (mongoose's default promise library) is deprecated
 */
 mongoose.Promise = global.Promise
 
-const SentencesSchema = new mongoose.Schema({
+const SentencesSchema = new Schema({
   content: {
     type: String,
     unique: true,
