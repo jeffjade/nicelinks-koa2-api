@@ -29,7 +29,7 @@ exports.getActivedUserNum = () => {
   return new Promise((resolve, reject) => {
     Record.findOne({ key: key }, (err, result) => {
       console.log(`✔️ recordCtrl[@getActivedUserNum] result: `, result)
-      err ? reject(err) : resolve(result)
+      err ? reject(err) : resolve(result ? result.value : result)
     })
   })
 }
