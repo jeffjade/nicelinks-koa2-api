@@ -189,7 +189,8 @@ exports.active = async (ctx, next) => {
 	// 激活并保存(同时设置用户的 number - 第几位注册用户)
 	try {
 		const activedUserNum = await $recordCtrl.getActivedUserNum()
-		user.number = (activedUserNum || 130) + 1
+		const latestCountNum = (activedUserNum || 130) + 1
+		user.number = latestCountNum
 		user.active = true
 		user.activeTime = new Date()
 		await new Promise((resolve, reject) => {
@@ -200,7 +201,7 @@ exports.active = async (ctx, next) => {
 		})
 
 		const cBeCalledFunc = activedUserNum ? $recordCtrl.updateActivedUserNum : $recordCtrl.setActivedUserNum
-		await cBeCalledFunc(activedUserNum || 130)
+		await cBeCalledFunc(latestCountNum)
 		$util.sendSuccessWithMsg(ctx, `successfulActivation`)
 	} catch (err) {
 		throw err
