@@ -112,6 +112,8 @@ router.post('/removeAdverts', ConfController.removeAdverts)
 // -----------Sentences-----------@18-06-18
 router.get('/getSentences', ConfController.getSentences)
 
+router.get('/getSentencesCount', ConfController.getSentencesCount)
+
 router.post('/updateSentences', ConfController.updateSentences)
 
 router.post('/removeSentences', ConfController.removeSentences)

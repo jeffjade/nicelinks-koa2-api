@@ -89,6 +89,17 @@ exports.getSentences = async (ctx, next) => {
   }
 }
 
+exports.getSentencesCount = async (ctx, next) => {
+  try {
+    let options = ctx.request.query
+    let params = {active: options.active || true}
+    let count = await Sentences.find(params).count()
+    $util.sendSuccess(ctx, count)
+  } catch (error) {
+    $util.sendFailure(ctx, null, 'Opps, Something Error [@getSentencesCount]:' + error)
+  }
+}
+
 exports.updateSentences = async (ctx, next) => {
   const requestBody = ctx.request.body
   let isUpdate = !!requestBody._id
