@@ -194,14 +194,13 @@ exports.active = async (ctx, next) => {
 		user.active = true
 		user.activeTime = new Date()
 		await new Promise((resolve, reject) => {
-			user.save((err) => {
+			user.save(async (err) => {
 				if (err) { reject(err) }
+				const cBeCalledFunc = activedUserNum ? $recordCtrl.updateActivedUserNum : $recordCtrl.setActivedUserNum
+				await cBeCalledFunc(latestCountNum)
 				resolve()
 			})
 		})
-
-		const cBeCalledFunc = activedUserNum ? $recordCtrl.updateActivedUserNum : $recordCtrl.setActivedUserNum
-		await cBeCalledFunc(latestCountNum)
 		$util.sendSuccessWithMsg(ctx, `successfulActivation`)
 	} catch (err) {
 		throw err
