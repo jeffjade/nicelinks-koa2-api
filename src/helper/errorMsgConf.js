@@ -19,6 +19,10 @@ module.exports = {
     zh: `验证失败，验证链接无效或已经过期，请重新 <a href='/login'>注册</a>。`,
     en: `Validation failed. The validation link is invalid or has expired. Please <a href='/login'>re register</a>`
   },
+  accountHasBeenActivated: {
+    zh: `您的账号已经成功激活，<a href='/login'>登录</a>即可访问。`,
+    en: `Your account has been successfully activated. <a href='/login'>Sign in</a> to access.`
+  },
   tokenValidationFailed: {
     zh: 'Token 验证失败，或已过期',
     en: 'Token Validation Failed，Or expired'

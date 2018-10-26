@@ -186,10 +186,14 @@ exports.active = async (ctx, next) => {
 	if (!user) {
 		return $util.sendFailure(ctx, 'activeValidationFailed')
 	}
+	if (user.active) {
+		return $util.sendFailure(ctx, 'accountHasBeenActivated')
+	}
 	// 激活并保存(同时设置用户的 number - 第几位注册用户)
 	try {
 		const activedUserNum = await $recordCtrl.getActivedUserNum()
 		const latestCountNum = (activedUserNum || 130) + 1
+		console.log(`已经注册用户 ${latestCountNum}`)
 		user.number = latestCountNum
 		user.active = true
 		user.activeTime = new Date()
