@@ -75,7 +75,7 @@ exports.getSentences = async (ctx, next) => {
     let limitNumber = parseInt(options.pageSize)
     let skipNumber = (parseInt(options.pageCount) - 1) * limitNumber
     let params = {
-        active: options.active
+      active: options.active
     }
     await Sentences.find(params)
       .sort(sortParam)
