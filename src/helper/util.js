@@ -206,7 +206,6 @@ module.exports = {
 
 	isInRedisIgnoreList(ctx) {
 		const ignoreApiList = [
-			'searchNiceLinks',
 			'crawlLinksInfo',
 			'getNiceLinks',
 			'getUserInfo',
