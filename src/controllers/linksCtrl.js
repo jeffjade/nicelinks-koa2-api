@@ -353,6 +353,19 @@ const searchNiceLinks = async (ctx, next) => {
 	}
 }
 
+const getRandomLinks = async (ctx, next) => {
+  try {
+    const options = ctx.request.query
+    return await Links.aggregate([
+      { $sample: { size: +options.size || 10 } }
+    ]).then(async result => {
+      $util.sendSuccess(ctx, result)
+    })
+  } catch (error) {
+    return $util.sendFailure(ctx, null, 'Opps, Something Error :' + error)
+  }
+}
+
 module.exports = {
 	getNiceLinks,
 	getLinksByTag,
@@ -366,5 +379,6 @@ module.exports = {
 	getMyPublish,
 	getMyLikes,
 	getMyDislikes,
-	searchNiceLinks
+	searchNiceLinks,
+	getRandomLinks
 }
