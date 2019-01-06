@@ -62,6 +62,8 @@ router.get('/getAllTags', LinksCtrl.getAllTags)
 router.get('/getAllLinks', LinksCtrl.getAllLinks)
 
 router.get('/getAllLinksCount', LinksCtrl.getAllLinksCount)
+
+router.get('/searchNiceLinks', LinksCtrl.searchNiceLinks)
 // *********************Login Auth Register********************** Strat//
 
 // Registration route
