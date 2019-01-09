@@ -200,7 +200,7 @@ const dispatchAction = async (ctx, next) => {
 
 const getAllTags = async (ctx, next) => {
 	try {
-		return await Links.find({}).limit(1000).exec().then(async (result) => {
+		return await Links.find({active: true}).limit(1000).exec().then(async (result) => {
 			let allTagsArr = []
 			result.map(item => {
 				allTagsArr = allTagsArr.concat(item.tags)
@@ -330,14 +330,22 @@ const searchNiceLinks = async (ctx, next) => {
 	let options = ctx.request.query
 	const limitNumber = 100
 	try {
-		const titleList = await Links.find({ title: { $regex: options.keyword } })
-			.limit(limitNumber)
-		const descList = await Links.find({ desc: { $regex: options.keyword } })
-			.limit(limitNumber)
-		const keywordsList = await Links.find({ keywords: { $regex: options.keyword } })
-			.limit(limitNumber)
-		const reviewList = await Links.find({ review: { $regex: options.keyword } })
-			.limit(limitNumber)
+		const titleList = await Links.find({
+				title: { $regex: options.keyword },
+				active: true
+			}).limit(limitNumber)
+		const descList = await Links.find({
+				desc: { $regex: options.keyword },
+				active: true
+			}).limit(limitNumber)
+		const keywordsList = await Links.find({
+				keywords: { $regex: options.keyword },
+				active: true
+			}).limit(limitNumber)
+		const reviewList = await Links.find({
+				review: { $regex: options.keyword },
+				active: true
+			}).limit(limitNumber)
 		let objArray = []
 		assemblyNewResult(titleList, objArray, 'title')
 		assemblyNewResult(descList, objArray, 'desc')
