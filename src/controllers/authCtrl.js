@@ -114,7 +114,7 @@ exports.login = (ctx, next) => {
 }
 
 exports.logout = (ctx, next) => {
-	ctx.cookies.set('ns-is-login', false)
+	ctx.cookies.set('is-login', false)
 	ctx.status = 200
 	$util.sendSuccess(ctx, 'logout successfully')
 }
