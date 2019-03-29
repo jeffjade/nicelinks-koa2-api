@@ -365,7 +365,8 @@ const getRandomLinks = async (ctx, next) => {
   try {
     const options = ctx.request.query
     return await Links.aggregate([
-      { $sample: { size: +options.size || 10 } }
+			{ $sample: { size: +options.size || 10 } },
+			{ $match : { active : true } }
     ]).then(async result => {
       $util.sendSuccess(ctx, result)
     })
